@@ -13,7 +13,6 @@ count = 0
 while True:
     ok, frame = cap.read()
     cv2.imshow("lookine", frame)
-    cv2.waitKey(10)
     if (count % 50 == 0):
         headers = {
             # Request headers. Replace the placeholder key below with your subscription key.
@@ -58,3 +57,8 @@ while True:
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
     count += 1
+        c = cv2.waitKey(10)
+    if c & 0xFF == ord('q'):
+        break
+cap.release()
+cv2.destroyAllWindows() 
