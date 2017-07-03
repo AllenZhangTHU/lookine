@@ -36,7 +36,7 @@ def getEmotion(img,qid):
     # print(r.headers)
     global emotion
     global rid
-    if (qid >= rid):
+    if (qid >= rid)and(not eval(r.content).has_key("error_message")):
         emotion = eval(r.content)
         rid = qid
     # print(emotion)
