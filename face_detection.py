@@ -14,8 +14,10 @@ import matplotlib.pyplot as plt
 
 
 emotion = {}
+qid = 0
+rid = 0
 plt.ion() 
-def getEmotion(img):
+def getEmotion(img,qid):
     stime = time.time()
     img_bi = cv2.imencode('.jpg', img)[1]
     body = base64.b64encode(img_bi)
@@ -33,9 +35,12 @@ def getEmotion(img):
     
     # print(r.headers)
     global emotion
-    emotion = eval(r.content)
+    global rid
+    if (qid >= rid):
+        emotion = eval(r.content)
+        rid = qid
     # print(emotion)
-    print(time.time()-stime)
+    # print(time.time()-stime)
 cv2.namedWindow("lookine")
 cap = cv2.VideoCapture(0) 
 cv2.waitKey(1000)
@@ -45,8 +50,9 @@ while True:
     count+=1
     ok, img = cap.read()
     # getEmotion(img)
-    if count % 10==0:
-        t1 = threading.Thread(target=getEmotion, args=(img,))
+    if count % 1==0:
+        qid += 1
+        t1 = threading.Thread(target=getEmotion, args=(img,qid))
         t1.start()
     # t1.join()
     # detect(image_file='timg.jpg')
@@ -72,6 +78,7 @@ while True:
     cv2.imshow("lookine", img)
     try:
         emotionDict = emotion["faces"][0]["attributes"]["emotion"]
+        print(len(emotion["faces"]))
         print(emotionDict)
         data = emotionDict.values()
         labels = emotionDict.keys()
@@ -82,7 +89,7 @@ while True:
     except Exception as e:
         # print("[Errno {0}] {1}".format(e.errno, e.strerror))
         pass
-    c = cv2.waitKey(10)
+    c = cv2.waitKey(1)
     if c & 0xFF == ord('q'):
         break
 cap.release()
