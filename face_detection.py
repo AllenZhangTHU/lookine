@@ -51,7 +51,7 @@ while True:
     # t1.join()
     # detect(image_file='timg.jpg')
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier('/Users/fatefaker/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     maxw = 0
     xx = 0
@@ -75,6 +75,8 @@ while True:
         print(emotionDict)
         data = emotionDict.values()
         labels = emotionDict.keys()
+        plt.cla()
+        plt.ylim((0,100))
         plt.bar(range(len(data)), data, tick_label=labels)
         plt.draw()
     except Exception as e:
