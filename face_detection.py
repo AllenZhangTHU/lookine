@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 
 emotion = {}
-
+plt.ion() 
 def getEmotion(img):
     stime = time.time()
     img_bi = cv2.imencode('.jpg', img)[1]
@@ -76,7 +76,7 @@ while True:
         data = emotionDict.values()
         labels = emotionDict.keys()
         plt.bar(range(len(data)), data, tick_label=labels)
-        plt.show(block = False)
+        plt.draw()
     except Exception as e:
         # print("[Errno {0}] {1}".format(e.errno, e.strerror))
         pass
