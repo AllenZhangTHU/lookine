@@ -14,7 +14,7 @@ import requests
 
 emotion = {}
 
-def getEmotion(img,emotion):
+def getEmotion(img):
     img_bi = cv2.imencode('.jpg', img)[1]
     body = base64.b64encode(img_bi)
     # body = bytearray(img_bi)
@@ -30,6 +30,7 @@ def getEmotion(img,emotion):
     # print(r.json)
     
     # print(r.headers)
+    global emotion
     emotion = r.content
     print(emotion)
 cv2.namedWindow("lookine")
@@ -42,7 +43,7 @@ while True:
     ok, img = cap.read()
     # getEmotion(img)
     if count % 5==0:
-        t1 = threading.Thread(target=getEmotion, args=(img,emotion))
+        t1 = threading.Thread(target=getEmotion, args=(img,))
         t1.start()
     # t1.join()
     # detect(image_file='timg.jpg')
