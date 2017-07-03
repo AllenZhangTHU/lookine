@@ -10,11 +10,13 @@ from  test_fppAPI import detect
 import time, threading
 import base64
 import requests
+import matplotlib.pyplot as plt
 
 
 emotion = {}
 
 def getEmotion(img):
+    stime = time.time()
     img_bi = cv2.imencode('.jpg', img)[1]
     body = base64.b64encode(img_bi)
     # body = bytearray(img_bi)
@@ -31,8 +33,9 @@ def getEmotion(img):
     
     # print(r.headers)
     global emotion
-    emotion = r.content
-    print(emotion)
+    emotion = eval(r.content)
+    # print(emotion)
+    print(time.time()-stime)
 cv2.namedWindow("lookine")
 cap = cv2.VideoCapture(0) 
 cv2.waitKey(1000)
@@ -42,7 +45,7 @@ while True:
     count+=1
     ok, img = cap.read()
     # getEmotion(img)
-    if count % 5==0:
+    if count % 10==0:
         t1 = threading.Thread(target=getEmotion, args=(img,))
         t1.start()
     # t1.join()
@@ -65,9 +68,18 @@ while True:
     # sys.stdout.write(str(control) + '\r')
     # sys.stdout.flush()
     font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(img, str(control)+'Emotion: '+str(emotion) , (10, 500), font, 3, (0, 0, 255), 4,False)
-
+    cv2.putText(img, str(control) , (10, 500), font, 3, (0, 0, 255), 4,False)
     cv2.imshow("lookine", img)
+    try:
+        emotionDict = emotion["faces"][0]["attributes"]["emotion"]
+        print(emotionDict)
+        data = emotionDict.values()
+        labels = emotionDict.keys()
+        plt.bar(range(len(data)), data, tick_label=labels)
+        plt.show(block = False)
+    except Exception as e:
+        # print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        pass
     c = cv2.waitKey(10)
     if c & 0xFF == ord('q'):
         break
