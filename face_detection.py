@@ -12,9 +12,9 @@ import base64
 import requests
 
 
-emotion = 0
+emotion = {}
 
-def getEmotion(img):
+def getEmotion(img,emotion):
     img_bi = cv2.imencode('.jpg', img)[1]
     body = base64.b64encode(img_bi)
     # body = bytearray(img_bi)
@@ -28,17 +28,23 @@ def getEmotion(img):
     }
     r = requests.post('https://api-cn.faceplusplus.com/facepp/v3/detect', data=headers)
     # print(r.json)
-    print(r.content)
+    
     # print(r.headers)
-    emotion = r.text
+    emotion = r.content
+    print(emotion)
 cv2.namedWindow("lookine")
 cap = cv2.VideoCapture(0) 
 cv2.waitKey(1000)
 count = 0
 
 while True:
+    count+=1
     ok, img = cap.read()
-    getEmotion(img)
+    # getEmotion(img)
+    if count % 5==0:
+        t1 = threading.Thread(target=getEmotion, args=(img,emotion))
+        t1.start()
+    # t1.join()
     # detect(image_file='timg.jpg')
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     face_cascade = cv2.CascadeClassifier('/Users/fatefaker/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
@@ -66,4 +72,3 @@ while True:
         break
 cap.release()
 cv2.destroyAllWindows() 
-   
