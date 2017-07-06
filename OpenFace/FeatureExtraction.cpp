@@ -53,6 +53,7 @@
 // Local includes
 #include "LandmarkCoreIncludes.h"
 
+#include <stdlib.h>
 #include <Face_utils.h>
 #include <FaceAnalyser.h>
 #include <GazeEstimation.h>
@@ -206,6 +207,7 @@ void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, boo
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
 	int num_landmarks, int num_model_modes, vector<string> au_names_class, vector<string> au_names_reg);
 
+static int count_num = 0;
 // Output all of the information into one file in one go (quite a few parameters, but simplifies the flow)
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
@@ -912,7 +914,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 				if (au_name.compare(au_reg.first) == 0)
 				{
 					*output_file << ", " << au_reg.second;
-					std::cout << au_reg.second << ", ";
+					//std::cout <<au_reg.first<<" "<<au_reg.second << "\t";
 					break;
 				}
 			}
@@ -923,11 +925,11 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
 			{
 				*output_file << ", 0";
-				std::cout << ", 0";
+				//std::cout << " 0";
 			}
 		}
 
-		std::cout << endl;
+		//std::cout << endl;
 		auto aus_class = face_analyser.GetCurrentAUsClass();
 
 		vector<string> au_class_names = face_analyser.GetAUClassNames();
@@ -941,7 +943,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 				if (au_name.compare(au_class.first) == 0)
 				{
 					*output_file << ", " << au_class.second;
-					std::cout << au_class.second << ", ";
+					//std::cout <<au_class.first<<" " <<au_class.second << "  ";
 					break;
 				}
 			}
@@ -952,10 +954,101 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
 			{
 				*output_file << ", 0";
-				std::cout << ", 0";
+				//std::cout << ", 0";
 			}
 		}
-		std::cout << endl;
+		//std::cout << endl<<endl;
+
+		count_num++;
+		if(count_num%1 == 0)
+		{
+			system("clear");
+			auto aus_reg = face_analyser.GetCurrentAUsReg();
+
+			vector<string> au_reg_names = face_analyser.GetAURegNames();
+			std::sort(au_reg_names.begin(), au_reg_names.end());
+
+			// write out ar the correct index
+			for (string au_name : au_reg_names)
+			{
+				for (auto au_reg : aus_reg)
+				{
+					if (au_name.compare(au_reg.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU10" ||
+					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17" || au_name == "AU20" || au_name == "AU23" || au_name == "AU26"))
+					{
+						//*output_file << ", " << au_reg.second;
+						int ls = (int) (au_reg.second / 0.1);
+						std::cout <<au_reg.first<<"  ";
+						if(au_reg.first == "AU01") printf("扬眉\t");
+						if(au_reg.first == "AU04") printf("皱眉\t");
+						if(au_reg.first == "AU10") printf("嘴角轻扬\t");
+						if(au_reg.first == "AU12") printf("嘴角上扬\t");
+						if(au_reg.first == "AU15") printf("嘴角下拉\t");
+						if(au_reg.first == "AU17") printf("下巴皱起\t");
+						if(au_reg.first == "AU20") printf("嘴小下拉\t");
+						if(au_reg.first == "AU23") printf("嘴巴收紧\t");
+						if(au_reg.first == "AU26") printf("张大嘴\t");
+						for(int i = 1;i<=ls;i++){
+							cout<<"▉";
+						}
+						std::cout<<"  "<<au_reg.second << endl;
+						break;
+					}
+				}
+			}
+
+			if (aus_reg.size() == 0)
+			{
+				for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
+				{
+					//*output_file << ", 0";
+					std::cout << " 0";
+				}
+			}
+
+			std::cout << endl;
+			auto aus_class = face_analyser.GetCurrentAUsClass();
+
+			vector<string> au_class_names = face_analyser.GetAUClassNames();
+			std::sort(au_class_names.begin(), au_class_names.end());
+
+			// write out ar the correct index
+			for (string au_name : au_class_names)
+			{
+				for (auto au_class : aus_class)
+				{
+					if (au_name.compare(au_class.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU10" ||
+					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17"   || au_name == "AU20" || au_name == "AU23" || au_name == "AU26"))
+					{
+						//*output_file << ", " << au_class.second;
+						std::cout <<au_class.first<<" ";
+						if(au_class.first == "AU01") printf("扬眉\t");
+						if(au_class.first == "AU04") printf("皱眉\t");
+						if(au_class.first == "AU10") printf("嘴角轻扬\t");
+						if(au_class.first == "AU12") printf("嘴角上扬\t");
+						if(au_class.first == "AU15") printf("嘴角下拉\t");
+						if(au_class.first == "AU17") printf("下巴皱起\t");
+						if(au_class.first == "AU20") printf("嘴小下拉\t");
+						if(au_class.first == "AU23") printf("嘴巴收紧\t");
+						if(au_class.first == "AU26") printf("张大嘴\t");
+						cout<<au_class.second << endl;
+						break;
+					}
+				}
+			}
+
+			if (aus_class.size() == 0)
+			{
+				for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
+				{
+					//*output_file << ", 0";
+					std::cout << ", 0";
+				}
+			}
+			std::cout << endl<<endl;
+			
+		}
+
 	}
 	*output_file << endl;
 }
