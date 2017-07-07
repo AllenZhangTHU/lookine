@@ -53,10 +53,28 @@
 // Local includes
 #include "LandmarkCoreIncludes.h"
 
+//#include <windows.h>  
+#include <cstdio>
 #include <stdlib.h>
 #include <Face_utils.h>
 #include <FaceAnalyser.h>
 #include <GazeEstimation.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <stdio.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/shm.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #ifndef CONFIG_DIR
 #define CONFIG_DIR "~"
@@ -208,6 +226,8 @@ void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, boo
 	int num_landmarks, int num_model_modes, vector<string> au_names_class, vector<string> au_names_reg);
 
 static int count_num = 0;
+static float au_buffer1[4][10] = {0};
+static bool  au_buffer2[4][10] = {0};
 // Output all of the information into one file in one go (quite a few parameters, but simplifies the flow)
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
@@ -574,7 +594,7 @@ int main (int argc, char **argv)
 			// But only if needed in output
 			if(!output_similarity_align.empty() || hog_output_file.is_open() || output_AUs)
 			{
-				face_analyser.AddNextFrame(captured_image, face_model, time_stamp, false, !det_parameters.quiet_mode);
+				face_analyser.AddNextFrame(captured_image, face_model, time_stamp, true, !det_parameters.quiet_mode);
 				face_analyser.GetLatestAlignedFace(sim_warped_img);
 
 				if(!det_parameters.quiet_mode)
@@ -960,8 +980,22 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		//std::cout << endl<<endl;
 
 		count_num++;
-		if(count_num%1 == 0)
+		if(count_num%1 == 0 && count_num > 10)
 		{
+			int ls_num;
+			if(au_buffer1[3][0] == 0 && au_buffer1[3][1] == 0 && au_buffer1[3][2] == 0) ls_num = 0;
+			if(au_buffer1[3][0] == 1 && au_buffer1[3][1] == 0 && au_buffer1[3][2] == 0) ls_num = 1;
+			if(au_buffer1[3][0] == 1 && au_buffer1[3][1] == 1 && au_buffer1[3][2] == 0) ls_num = 2;
+			if(au_buffer1[3][0] == 1 && au_buffer1[3][1] == 1 && au_buffer1[3][2] == 1){
+				for(int i = 0;i<=8;i++){
+					au_buffer1[0][i] = au_buffer1[1][i];
+					au_buffer1[1][i] = au_buffer1[2][i];
+					au_buffer2[0][i] = au_buffer2[1][i];
+					au_buffer2[1][i] = au_buffer2[2][i];
+				}
+				ls_num = 2;
+			}
+
 			system("clear");
 			auto aus_reg = face_analyser.GetCurrentAUsReg();
 
@@ -979,15 +1013,15 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 						//*output_file << ", " << au_reg.second;
 						int ls = (int) (au_reg.second / 0.1);
 						std::cout <<au_reg.first<<"  ";
-						if(au_reg.first == "AU01") printf("扬眉\t");
-						if(au_reg.first == "AU04") printf("皱眉\t");
-						if(au_reg.first == "AU10") printf("嘴角轻扬\t");
-						if(au_reg.first == "AU12") printf("嘴角上扬\t");
-						if(au_reg.first == "AU15") printf("嘴角下拉\t");
-						if(au_reg.first == "AU17") printf("下巴皱起\t");
-						if(au_reg.first == "AU20") printf("嘴小下拉\t");
-						if(au_reg.first == "AU23") printf("嘴巴收紧\t");
-						if(au_reg.first == "AU26") printf("张大嘴\t");
+						if(au_reg.first == "AU01") {printf("扬眉\t");    au_buffer1[ls_num][0] = au_reg.second;}
+						if(au_reg.first == "AU04") {printf("皱眉\t");    au_buffer1[ls_num][1] = au_reg.second;}
+						if(au_reg.first == "AU10") {printf("嘴角轻扬\t"); au_buffer1[ls_num][2] = au_reg.second;}
+						if(au_reg.first == "AU12") {printf("嘴角上扬\t"); au_buffer1[ls_num][3] = au_reg.second;}
+						if(au_reg.first == "AU15") {printf("嘴角下拉\t"); au_buffer1[ls_num][4] = au_reg.second;}
+						if(au_reg.first == "AU17") {printf("下巴皱起\t"); au_buffer1[ls_num][5] = au_reg.second;}
+						if(au_reg.first == "AU20") {printf("嘴小下拉\t"); au_buffer1[ls_num][6] = au_reg.second;}
+						if(au_reg.first == "AU23") {printf("嘴巴收紧\t"); au_buffer1[ls_num][7] = au_reg.second;} 
+						if(au_reg.first == "AU26") {printf("张大嘴\t");   au_buffer1[ls_num][8] = au_reg.second;}
 						for(int i = 1;i<=ls;i++){
 							cout<<"▉";
 						}
@@ -1022,15 +1056,15 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 					{
 						//*output_file << ", " << au_class.second;
 						std::cout <<au_class.first<<" ";
-						if(au_class.first == "AU01") printf("扬眉\t");
-						if(au_class.first == "AU04") printf("皱眉\t");
-						if(au_class.first == "AU10") printf("嘴角轻扬\t");
-						if(au_class.first == "AU12") printf("嘴角上扬\t");
-						if(au_class.first == "AU15") printf("嘴角下拉\t");
-						if(au_class.first == "AU17") printf("下巴皱起\t");
-						if(au_class.first == "AU20") printf("嘴小下拉\t");
-						if(au_class.first == "AU23") printf("嘴巴收紧\t");
-						if(au_class.first == "AU26") printf("张大嘴\t");
+						if(au_class.first == "AU01") {printf("扬眉\t");     au_buffer2[ls_num][0] = au_class.second;}
+						if(au_class.first == "AU04") {printf("皱眉\t");     au_buffer2[ls_num][1] = au_class.second;}
+						if(au_class.first == "AU10") {printf("嘴角轻扬\t"); au_buffer2[ls_num][2] = au_class.second;}
+						if(au_class.first == "AU12") {printf("嘴角上扬\t"); au_buffer2[ls_num][3] = au_class.second;}
+						if(au_class.first == "AU15") {printf("嘴角下拉\t"); au_buffer2[ls_num][4] = au_class.second;}
+						if(au_class.first == "AU17") {printf("下巴皱起\t"); au_buffer2[ls_num][5] = au_class.second;}
+						if(au_class.first == "AU20") {printf("嘴小下拉\t"); au_buffer2[ls_num][6] = au_class.second;}
+						if(au_class.first == "AU23") {printf("嘴巴收紧\t"); au_buffer2[ls_num][7] = au_class.second;}
+						if(au_class.first == "AU26") {printf("张大嘴\t");   au_buffer2[ls_num][8] = au_class.second;}
 						cout<<au_class.second << endl;
 						break;
 					}
@@ -1046,7 +1080,56 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 				}
 			}
 			std::cout << endl<<endl;
-			
+
+			au_buffer1[3][ls_num] = 1;
+			au_buffer2[3][ls_num] = 1;
+
+			//网络接口
+
+			int sockfd;
+		    struct sockaddr_in servaddr;
+
+		    sockfd = socket(PF_INET, SOCK_DGRAM, 0);
+
+		    bzero(&servaddr, sizeof(servaddr));
+		    servaddr.sin_family = AF_INET;
+		    servaddr.sin_port = htons(23333);
+		    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+		    char sendline[100];
+		    //int ls = 0;
+			for(int i = 0;i<=8;i++){
+				if(au_buffer1[0][i] > 3.0 && au_buffer1[1][i] > 3.0 && au_buffer1[2][i] > 3.0){
+					if(au_buffer2[0][i] == 1 && au_buffer2[1][i] == 1 && au_buffer2[2][i] == 1){
+						cout<<"识别出表情："<<i<<endl;
+						sendline[i] = '1';
+					}
+				}
+				sendline[i] = '0';
+			}
+		    //sprintf(sendline, "Hello, world!");
+
+		    sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+
+		    close(sockfd);
+		  
+
+
+			//test
+			// for(int j = 0;j<=3;j++){
+			// 	for(int i = 0;i<=8;i++){
+			// 		cout<<j<<" "<<i<<" "<<au_buffer1[j][i]<<"  ";
+			// 	}
+			// 	cout<<endl;
+			// }
+			// for(int j = 0;j<=3;j++){
+			// 	for(int i = 0;i<=8;i++){
+			// 		cout<<j<<" "<<i<<" "<<au_buffer2[j][i]<<"  ";
+			// 	}
+			// 	cout<<endl;
+			// }
+			// cout << endl;
+
 		}
 
 	}
