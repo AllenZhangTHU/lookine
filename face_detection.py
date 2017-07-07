@@ -11,6 +11,7 @@ import time, threading
 import base64
 import requests
 import matplotlib.pyplot as plt
+import serial
 
 
 emotion = {}
@@ -46,6 +47,18 @@ cap = cv2.VideoCapture(0)
 cv2.waitKey(1000)
 count = 0
 
+
+MARGIN = 50
+MOVEUNIT = 5
+device = '/dev/ttyUSB0'
+MAX_TIME_SLICE = 10
+time_slice = 0
+
+try:
+    arduino = serial.Serial(device, 9600)
+except:
+    print 'Failed to connect on ' + device
+
 while True:
     count+=1
     ok, img = cap.read()
@@ -69,6 +82,19 @@ while True:
     control = img.shape[1]/2 - (xx+maxw/2)
     if maxw == 0:
         control = 0
+    if time_slice == 0:
+        if (abs(control) >= MARGIN):
+            time_slice = MAX_TIME_SLICE
+            control /= abs(control)
+            control *= MOVEUNIT
+            try:
+                arduino.write(str(control))
+                time.sleep(1)
+                print arduino.readline()
+            except:
+                print 'Failed to send'
+    else:
+        time_slice -= 1
     # sys.stdout.write(' ' * 10 + '\r')
     # sys.stdout.flush()
     # sys.stdout.write(str(control) + '\r')
