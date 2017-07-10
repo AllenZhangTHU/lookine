@@ -16,6 +16,9 @@ import socket
 import pygame
 
 happinessT = 0
+sadnessT = 0
+surpriseT = 0
+
 pygame.mixer.init()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -127,8 +130,27 @@ while True:
         else:
             happinessT = 0
         if (happinessT == 3):
-            pygame.mixer.music.load('/Users/fatefaker/Downloads/happy.mp3')
+            pygame.mixer.music.load('/Users/fatefaker/Downloads/happiness.mp3')
             pygame.mixer.music.play()
+
+        sadness = emotionDict['sadness']
+        if (sadness >80):
+            sadnessT += 1
+        else:
+            sadnessT = 0
+        if (sadnessT == 3):
+            pygame.mixer.music.load('/Users/fatefaker/Downloads/sadness.mp3')
+            pygame.mixer.music.play()
+
+        surprise = emotionDict['surprise']
+        if (surprise >80):
+            surpriseT += 1
+        else:
+            surpriseT = 0
+        if (surpriseT == 3):
+            pygame.mixer.music.load('/Users/fatefaker/Downloads/surprise.mp3')
+            pygame.mixer.music.play()
+
         data = emotionDict.values()
         labels = emotionDict.keys()
         plt.cla()
