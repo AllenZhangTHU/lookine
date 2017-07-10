@@ -1003,33 +1003,56 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			std::sort(au_reg_names.begin(), au_reg_names.end());
 
 			// write out ar the correct index
+			float ls_au02 = 0;
+			float ls_au05 = 0;
 			for (string au_name : au_reg_names)
 			{
 				for (auto au_reg : aus_reg)
 				{
-					if (au_name.compare(au_reg.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU10" ||
+					if (au_name.compare(au_reg.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU02" || au_name == "AU05" || au_name == "AU10" ||
 					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17" || au_name == "AU20" || au_name == "AU23" || au_name == "AU26"))
 					{
 						//*output_file << ", " << au_reg.second;
-						int ls = (int) (au_reg.second / 0.1);
-						std::cout <<au_reg.first<<"  ";
-						if(au_reg.first == "AU01") {printf("扬眉\t");    au_buffer1[ls_num][0] = au_reg.second;}
-						if(au_reg.first == "AU04") {printf("皱眉\t");    au_buffer1[ls_num][1] = au_reg.second;}
-						if(au_reg.first == "AU10") {printf("嘴角轻扬\t"); au_buffer1[ls_num][2] = au_reg.second;}
-						if(au_reg.first == "AU12") {printf("嘴角上扬\t"); au_buffer1[ls_num][3] = au_reg.second;}
-						if(au_reg.first == "AU15") {printf("嘴角下拉\t"); au_buffer1[ls_num][4] = au_reg.second;}
-						if(au_reg.first == "AU17") {printf("下巴皱起\t"); au_buffer1[ls_num][5] = au_reg.second;}
-						if(au_reg.first == "AU20") {printf("嘴小下拉\t"); au_buffer1[ls_num][6] = au_reg.second;}
-						if(au_reg.first == "AU23") {printf("嘴巴收紧\t"); au_buffer1[ls_num][7] = au_reg.second;} 
-						if(au_reg.first == "AU26") {printf("张大嘴\t");   au_buffer1[ls_num][8] = au_reg.second;}
-						for(int i = 1;i<=ls;i++){
-							cout<<"▉";
-						}
-						std::cout<<"  "<<au_reg.second << endl;
+						
+						if(au_reg.first == "AU01") {au_buffer1[ls_num][0] = au_reg.second;}
+						if(au_reg.first == "AU02") {ls_au02 = au_reg.second;}
+						if(au_reg.first == "AU05") {ls_au05 = au_reg.second;}
+
+						if(au_reg.first == "AU04") {au_buffer1[ls_num][1] = au_reg.second;}
+						if(au_reg.first == "AU10") {au_buffer1[ls_num][2] = au_reg.second;}
+						if(au_reg.first == "AU12") {au_buffer1[ls_num][3] = au_reg.second;}
+						if(au_reg.first == "AU15") {au_buffer1[ls_num][4] = au_reg.second;}
+						if(au_reg.first == "AU17") {au_buffer1[ls_num][5] = au_reg.second;}
+						if(au_reg.first == "AU20") {au_buffer1[ls_num][6] = au_reg.second;}
+						if(au_reg.first == "AU23") {au_buffer1[ls_num][7] = au_reg.second;} 
+						if(au_reg.first == "AU26") {au_buffer1[ls_num][8] = au_reg.second;}
+						
 						break;
 					}
 				}
 			}
+
+			au_buffer1[ls_num][0] = (au_buffer1[ls_num][0] + ls_au02 + ls_au05) / 3.0;
+ 			// print the result
+			for(int k = 0; k<=8; k++){
+				int ls = (int) (au_buffer1[ls_num][k] / 0.1);
+
+				if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
+				if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
+				if(k == 2) { cout<<"AU10  "; printf("嘴角轻扬\t");}
+				if(k == 3) { cout<<"AU12  "; printf("嘴角上扬\t");}
+				if(k == 4) { cout<<"AU15  "; printf("嘴角下拉\t");}
+				if(k == 5) { cout<<"AU17  "; printf("下巴皱起\t");}
+				if(k == 6) { cout<<"AU20  "; printf("嘴小下拉\t");}
+				if(k == 7) { cout<<"AU23  "; printf("嘴巴收紧\t");}
+				if(k == 8) { cout<<"AU26  "; printf("张大嘴\t");}
+
+				for(int i = 1;i<=ls;i++){
+					cout<<"▉";
+				}
+				std::cout<<"  "<< au_buffer1[ls_num][k] << endl;
+			}
+
 
 			if (aus_reg.size() == 0)
 			{
@@ -1047,28 +1070,54 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			std::sort(au_class_names.begin(), au_class_names.end());
 
 			// write out ar the correct index
+			bool ls1_au02 = 0;
+			bool ls1_au05 = 0;
 			for (string au_name : au_class_names)
 			{
 				for (auto au_class : aus_class)
 				{
-					if (au_name.compare(au_class.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU10" ||
+					if (au_name.compare(au_class.first) == 0 && (au_name == "AU01" || au_name == "AU02" || au_name == "AU05" || au_name == "AU04" || au_name == "AU10" ||
 					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17"   || au_name == "AU20" || au_name == "AU23" || au_name == "AU26"))
 					{
 						//*output_file << ", " << au_class.second;
-						std::cout <<au_class.first<<" ";
-						if(au_class.first == "AU01") {printf("扬眉\t");     au_buffer2[ls_num][0] = au_class.second;}
-						if(au_class.first == "AU04") {printf("皱眉\t");     au_buffer2[ls_num][1] = au_class.second;}
-						if(au_class.first == "AU10") {printf("嘴角轻扬\t"); au_buffer2[ls_num][2] = au_class.second;}
-						if(au_class.first == "AU12") {printf("嘴角上扬\t"); au_buffer2[ls_num][3] = au_class.second;}
-						if(au_class.first == "AU15") {printf("嘴角下拉\t"); au_buffer2[ls_num][4] = au_class.second;}
-						if(au_class.first == "AU17") {printf("下巴皱起\t"); au_buffer2[ls_num][5] = au_class.second;}
-						if(au_class.first == "AU20") {printf("嘴小下拉\t"); au_buffer2[ls_num][6] = au_class.second;}
-						if(au_class.first == "AU23") {printf("嘴巴收紧\t"); au_buffer2[ls_num][7] = au_class.second;}
-						if(au_class.first == "AU26") {printf("张大嘴\t");   au_buffer2[ls_num][8] = au_class.second;}
-						cout<<au_class.second << endl;
+						if(au_class.first == "AU01") {au_buffer2[ls_num][0] = au_class.second;}
+						if(au_class.first == "AU02") {ls1_au02 = au_class.second;}
+						if(au_class.first == "AU05") {ls1_au05 = au_class.second;}
+
+						if(au_class.first == "AU04") {au_buffer2[ls_num][1] = au_class.second;}
+						if(au_class.first == "AU10") {au_buffer2[ls_num][2] = au_class.second;}
+						if(au_class.first == "AU12") {au_buffer2[ls_num][3] = au_class.second;}
+						if(au_class.first == "AU15") {au_buffer2[ls_num][4] = au_class.second;}
+						if(au_class.first == "AU17") {au_buffer2[ls_num][5] = au_class.second;}
+						if(au_class.first == "AU20") {au_buffer2[ls_num][6] = au_class.second;}
+						if(au_class.first == "AU23") {au_buffer2[ls_num][7] = au_class.second;} 
+						if(au_class.first == "AU26") {au_buffer2[ls_num][8] = au_class.second;}
+
 						break;
 					}
 				}
+			}
+
+			if((au_buffer2[ls_num][0] == 1 && ls1_au05 == 1) || (au_buffer2[ls_num][0] == 1 && ls1_au02 == 1) || (ls_au02 == 1 && ls1_au05 == 1)){
+				au_buffer2[ls_num][0] = 1;
+			}
+			else{
+				au_buffer2[ls_num][0] = 0;
+			}
+ 			// print the result
+			for(int k = 0; k<=8; k++){
+
+				if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
+				if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
+				if(k == 2) { cout<<"AU10  "; printf("嘴角轻扬\t");}
+				if(k == 3) { cout<<"AU12  "; printf("嘴角上扬\t");}
+				if(k == 4) { cout<<"AU15  "; printf("嘴角下拉\t");}
+				if(k == 5) { cout<<"AU17  "; printf("下巴皱起\t");}
+				if(k == 6) { cout<<"AU20  "; printf("嘴小下拉\t");}
+				if(k == 7) { cout<<"AU23  "; printf("嘴巴收紧\t");}
+				if(k == 8) { cout<<"AU26  "; printf("张大嘴\t");}
+
+				std::cout<<"  "<< au_buffer2[ls_num][k] << endl;
 			}
 
 			if (aus_class.size() == 0)
@@ -1113,8 +1162,6 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 		    close(sockfd);
 		  
-
-
 			//test
 			// for(int j = 0;j<=3;j++){
 			// 	for(int i = 0;i<=8;i++){
