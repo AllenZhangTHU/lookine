@@ -13,6 +13,10 @@ import requests
 import matplotlib.pyplot as plt
 import serial
 import socket
+import pygame
+
+happinessT = 0
+pygame.mixer.init()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
@@ -117,6 +121,14 @@ while True:
         emotionDict = emotion["faces"][0]["attributes"]["emotion"]
         # print(len(emotion["faces"]))
         # print(emotionDict)
+        happiness = emotionDict['happiness']
+        if (happiness >80):
+            happinessT += 1
+        else:
+            happinessT = 0
+        if (happinessT == 3):
+            pygame.mixer.music.load('/Users/fatefaker/Downloads/happy.mp3')
+            pygame.mixer.music.play()
         data = emotionDict.values()
         labels = emotionDict.keys()
         plt.cla()
