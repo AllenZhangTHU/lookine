@@ -12,12 +12,22 @@ import base64
 import requests
 import matplotlib.pyplot as plt
 import serial
+import socket
 
-
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('127.0.0.1', 23333))
 emotion = {}
 qid = 0
 rid = 0
 plt.ion() 
+def listentoCPP():
+    while (True):
+        data, addr = s.recvfrom(1024)
+        type(data)
+        print(data)
+t = threading.Thread(target=listentoCPP, args=())
+t.start()
+
 def getEmotion(img,qid):
     stime = time.time()
     img_bi = cv2.imencode('.jpg', img)[1]
@@ -57,8 +67,8 @@ time_slice = 0
 try:
     arduino = serial.Serial(device, 9600)
 except:
-    print 'Failed to connect on ' + device
-
+    # print 'Failed to connect on ' + device
+    pass
 while True:
     count+=1
     ok, img = cap.read()
@@ -90,9 +100,10 @@ while True:
             try:
                 arduino.write(str(control))
                 time.sleep(1)
-                print arduino.readline()
+                # print arduino.readline()
             except:
-                print 'Failed to send'
+                # print 'Failed to send'
+                pass
     else:
         time_slice -= 1
     # sys.stdout.write(' ' * 10 + '\r')
@@ -104,8 +115,8 @@ while True:
     cv2.imshow("lookine", img)
     try:
         emotionDict = emotion["faces"][0]["attributes"]["emotion"]
-        print(len(emotion["faces"]))
-        print(emotionDict)
+        # print(len(emotion["faces"]))
+        # print(emotionDict)
         data = emotionDict.values()
         labels = emotionDict.keys()
         plt.cla()
@@ -120,3 +131,4 @@ while True:
         break
 cap.release()
 cv2.destroyAllWindows() 
+s.close()
