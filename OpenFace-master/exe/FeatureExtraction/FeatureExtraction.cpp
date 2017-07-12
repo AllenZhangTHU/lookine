@@ -1460,16 +1460,16 @@ bool estimateNodding(const list<PEloc> history_pose_estimate) {
 	list<PEloc>::const_iterator it1 = history_pose_estimate.end();
 	list<PEloc>::const_iterator it2 = it1--;
 	double drx = (*it1).x - (*it2).x;
-	if ((abs(drx)<0.05))
+	if ((drx*a<0)||(abs(drx)<0.05))
+		a = 0;
+	if (abs(drx)>0.05)
+		a+=(drx>0)?1:-1;
+	if (abs(a)<=1)
 		c +=1;
 	else
 		c = 0;
 	if (c >2 )
 		b = 0;
-	if ((drx*a<0)||(abs(drx)<0.05))
-		a = 0;
-	if (abs(drx)>0.05)
-		a+=(drx>0)?1:-1;
 	if (abs(a)>3 && a*b<=0)
 	{
 		b = -b;
@@ -1492,16 +1492,16 @@ bool estimateShaking(const list<PEloc> history_pose_estimate) {
 	list<PEloc>::const_iterator it1 = history_pose_estimate.end();
 	list<PEloc>::const_iterator it2 = it1--;
 	double drx = (*it1).y - (*it2).y;
-	if ((abs(drx)<0.05))
+	if ((drx*a<0)||(abs(drx)<0.05))
+		a = 0;
+	if (abs(drx)>0.05)
+		a+=(drx>0)?1:-1;
+	if (abs(a)<=1)
 		c +=1;
 	else
 		c = 0;
 	if (c >2 )
 		b = 0;
-	if ((drx*a<0)||(abs(drx)<0.05))
-		a = 0;
-	if (abs(drx)>0.05)
-		a+=(drx>0)?1:-1;
 	if (abs(a)>3 && a*b<=0)
 	{
 		b = -b;
