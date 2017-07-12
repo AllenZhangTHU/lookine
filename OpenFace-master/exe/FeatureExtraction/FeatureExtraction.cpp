@@ -1176,8 +1176,6 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 		    close(sockfd);
 
-		    cout << pose_estimate[3] << "  " << pose_estimate[4] << "  " << pose_estimate[5] << endl;
-		  
 			//test
 			// for(int j = 0;j<=3;j++){
 			// 	for(int i = 0;i<=8;i++){
@@ -1197,6 +1195,10 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 	}
 	*output_file << endl;
+
+	cout << pose_estimate[3] << "  " << pose_estimate[4] << "  " << pose_estimate[5] << endl;
+	cout << "点头：" << (nodding ? "是" : "否") << endl;
+	cout << "摇头：" << (shaking ? "是" : "否") << endl;
 }
 
 
