@@ -228,15 +228,21 @@ void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, boo
 static int count_num = 0;
 static float au_buffer1[4][10] = {0};
 static bool  au_buffer2[4][10] = {0};
+static int au_buffer[10] = {0};
+static int au_buffer0[10] = {0};
+
 // Output all of the information into one file in one go (quite a few parameters, but simplifies the flow)
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
 	const LandmarkDetector::CLNF& face_model, int frame_count, double time_stamp, bool detection_success,
-	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
+	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, 
+	bool nodding, bool shaking, double fx, double fy, double cx, double cy,
 	const FaceAnalysis::FaceAnalyser& face_analyser);
 
 void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file, bool dynamic);
 
+bool estimateNodding(const cv::Vec6d& pose_estimate);
+bool estimateShaking(const cv::Vec6d& pose_estimate);
 
 int main (int argc, char **argv)
 {
@@ -625,6 +631,9 @@ int main (int argc, char **argv)
 				pose_estimate = LandmarkDetector::GetCorrectedPoseCamera(face_model, fx, fy, cx, cy);
 			}
 
+			bool nodding = estimateNodding(pose_estimate);
+			bool shaking = estimateShaking(pose_estimate);
+
 			if (hog_output_file.is_open())
 			{
 				output_HOG_frame(&hog_output_file, detection_success, hog_descriptor, num_hog_rows, num_hog_cols);
@@ -665,7 +674,7 @@ int main (int argc, char **argv)
 			// Output the landmarks, pose, gaze, parameters and AUs
 			outputAllFeatures(&output_file, output_2D_landmarks, output_3D_landmarks, output_model_params, output_pose, output_AUs, output_gaze,
 				face_model, frame_count, time_stamp, detection_success, gazeDirection0, gazeDirection1,
-				pose_estimate, fx, fy, cx, cy, face_analyser);
+				pose_estimate, nodding, shaking, fx, fy, cx, cy, face_analyser);
 
 			// output the tracked video
 			if(!tracked_videos_output.empty())
@@ -829,7 +838,8 @@ void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, boo
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
 	const LandmarkDetector::CLNF& face_model, int frame_count, double time_stamp, bool detection_success,
-	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
+	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, 
+	bool nodding, bool shaking, double fx, double fy, double cx, double cy,
 	const FaceAnalysis::FaceAnalyser& face_analyser)
 {
 
@@ -1009,8 +1019,8 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			{
 				for (auto au_reg : aus_reg)
 				{
-					if (au_name.compare(au_reg.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU02" || au_name == "AU05" || au_name == "AU10" ||
-					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17" || au_name == "AU20" || au_name == "AU23" || au_name == "AU26"))
+					if (au_name.compare(au_reg.first) == 0 && (au_name == "AU01" || au_name == "AU04" || au_name == "AU02" || au_name == "AU05" ||
+					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17" || au_name == "AU23" || au_name == "AU26"))
 					{
 						//*output_file << ", " << au_reg.second;
 						
@@ -1018,14 +1028,12 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 						if(au_reg.first == "AU02") {ls_au02 = au_reg.second;}
 						if(au_reg.first == "AU05") {ls_au05 = au_reg.second;}
 
-						if(au_reg.first == "AU04") {au_buffer1[ls_num][1] = au_reg.second;}
-						if(au_reg.first == "AU10") {au_buffer1[ls_num][2] = au_reg.second;}
-						if(au_reg.first == "AU12") {au_buffer1[ls_num][3] = au_reg.second;}
-						if(au_reg.first == "AU15") {au_buffer1[ls_num][4] = au_reg.second;}
-						if(au_reg.first == "AU17") {au_buffer1[ls_num][5] = au_reg.second;}
-						if(au_reg.first == "AU20") {au_buffer1[ls_num][6] = au_reg.second;}
-						if(au_reg.first == "AU23") {au_buffer1[ls_num][7] = au_reg.second;} 
-						if(au_reg.first == "AU26") {au_buffer1[ls_num][8] = au_reg.second;}
+						if(au_reg.first == "AU04") {au_buffer1[ls_num][1] = au_reg.second; if(au_reg.second >= 3){au_buffer[2]+=1;} else{au_buffer[2]=0;}}
+						if(au_reg.first == "AU12") {au_buffer1[ls_num][2] = au_reg.second; if(au_reg.second >= 3){au_buffer[3]+=1;} else{au_buffer[3]=0;}}
+						if(au_reg.first == "AU15") {au_buffer1[ls_num][3] = au_reg.second; if(au_reg.second >= 3){au_buffer[4]+=1;} else{au_buffer[4]=0;}}
+						if(au_reg.first == "AU17") {au_buffer1[ls_num][4] = au_reg.second; if(au_reg.second >= 3){au_buffer[5]+=1;} else{au_buffer[5]=0;}}
+						if(au_reg.first == "AU23") {au_buffer1[ls_num][5] = au_reg.second; if(au_reg.second >= 3){au_buffer[6]+=1;} else{au_buffer[6]=0;}}
+						if(au_reg.first == "AU26") {au_buffer1[ls_num][6] = au_reg.second; if(au_reg.second >= 3){au_buffer[7]+=1;} else{au_buffer[7]=0;}}
 						
 						break;
 					}
@@ -1033,19 +1041,19 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			}
 
 			au_buffer1[ls_num][0] = (au_buffer1[ls_num][0] + ls_au02 + ls_au05) / 3.0;
+			if(au_buffer1[ls_num][0] >= 3){au_buffer[1]+=1;} else{au_buffer[1]=0;}
+
  			// print the result
-			for(int k = 0; k<=8; k++){
+			for(int k = 0; k<=6; k++){
 				int ls = (int) (au_buffer1[ls_num][k] / 0.1);
 
 				if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
 				if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
-				if(k == 2) { cout<<"AU10  "; printf("嘴角轻扬\t");}
-				if(k == 3) { cout<<"AU12  "; printf("嘴角上扬\t");}
-				if(k == 4) { cout<<"AU15  "; printf("嘴角下拉\t");}
-				if(k == 5) { cout<<"AU17  "; printf("下巴皱起\t");}
-				if(k == 6) { cout<<"AU20  "; printf("嘴小下拉\t");}
-				if(k == 7) { cout<<"AU23  "; printf("嘴巴收紧\t");}
-				if(k == 8) { cout<<"AU26  "; printf("张大嘴\t");}
+				if(k == 2) { cout<<"AU12  "; printf("嘴角上扬\t");}
+				if(k == 3) { cout<<"AU15  "; printf("嘴角下拉\t");}
+				if(k == 4) { cout<<"AU17  "; printf("下巴皱起\t");}
+				if(k == 5) { cout<<"AU23  "; printf("嘴巴收紧\t");}
+				if(k == 6) { cout<<"AU26  "; printf("张大嘴\t");}
 
 				for(int i = 1;i<=ls;i++){
 					cout<<"▉";
@@ -1076,22 +1084,20 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			{
 				for (auto au_class : aus_class)
 				{
-					if (au_name.compare(au_class.first) == 0 && (au_name == "AU01" || au_name == "AU02" || au_name == "AU05" || au_name == "AU04" || au_name == "AU10" ||
-					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17"   || au_name == "AU20" || au_name == "AU23" || au_name == "AU26"))
+					if (au_name.compare(au_class.first) == 0 && (au_name == "AU01" || au_name == "AU02" || au_name == "AU05" || au_name == "AU04" ||
+					 au_name == "AU12" || au_name == "AU15" || au_name == "AU17"   || au_name == "AU23" || au_name == "AU26"))
 					{
 						//*output_file << ", " << au_class.second;
 						if(au_class.first == "AU01") {au_buffer2[ls_num][0] = au_class.second;}
 						if(au_class.first == "AU02") {ls1_au02 = au_class.second;}
 						if(au_class.first == "AU05") {ls1_au05 = au_class.second;}
 
-						if(au_class.first == "AU04") {au_buffer2[ls_num][1] = au_class.second;}
-						if(au_class.first == "AU10") {au_buffer2[ls_num][2] = au_class.second;}
-						if(au_class.first == "AU12") {au_buffer2[ls_num][3] = au_class.second;}
-						if(au_class.first == "AU15") {au_buffer2[ls_num][4] = au_class.second;}
-						if(au_class.first == "AU17") {au_buffer2[ls_num][5] = au_class.second;}
-						if(au_class.first == "AU20") {au_buffer2[ls_num][6] = au_class.second;}
-						if(au_class.first == "AU23") {au_buffer2[ls_num][7] = au_class.second;} 
-						if(au_class.first == "AU26") {au_buffer2[ls_num][8] = au_class.second;}
+						if(au_class.first == "AU04") {au_buffer2[ls_num][1] = au_class.second;if(au_class.second == 1){au_buffer0[2]+=1;} else{au_buffer0[2]=0;}}
+						if(au_class.first == "AU12") {au_buffer2[ls_num][2] = au_class.second;if(au_class.second == 1){au_buffer0[3]+=1;} else{au_buffer0[3]=0;}}
+						if(au_class.first == "AU15") {au_buffer2[ls_num][3] = au_class.second;if(au_class.second == 1){au_buffer0[4]+=1;} else{au_buffer0[4]=0;}}
+						if(au_class.first == "AU17") {au_buffer2[ls_num][4] = au_class.second;if(au_class.second == 1){au_buffer0[5]+=1;} else{au_buffer0[5]=0;}}
+						if(au_class.first == "AU23") {au_buffer2[ls_num][5] = au_class.second;if(au_class.second == 1){au_buffer0[6]+=1;} else{au_buffer0[6]=0;}} 
+						if(au_class.first == "AU26") {au_buffer2[ls_num][6] = au_class.second;if(au_class.second == 1){au_buffer0[7]+=1;} else{au_buffer0[7]=0;}}
 
 						break;
 					}
@@ -1104,18 +1110,18 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			else{
 				au_buffer2[ls_num][0] = 0;
 			}
+
+			if(au_buffer2[ls_num][0] == 1){au_buffer0[1]+=1;} else{au_buffer0[1]=0;}
  			// print the result
-			for(int k = 0; k<=8; k++){
+			for(int k = 0; k<=6; k++){
 
 				if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
 				if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
-				if(k == 2) { cout<<"AU10  "; printf("嘴角轻扬\t");}
-				if(k == 3) { cout<<"AU12  "; printf("嘴角上扬\t");}
-				if(k == 4) { cout<<"AU15  "; printf("嘴角下拉\t");}
-				if(k == 5) { cout<<"AU17  "; printf("下巴皱起\t");}
-				if(k == 6) { cout<<"AU20  "; printf("嘴小下拉\t");}
-				if(k == 7) { cout<<"AU23  "; printf("嘴巴收紧\t");}
-				if(k == 8) { cout<<"AU26  "; printf("张大嘴\t");}
+				if(k == 2) { cout<<"AU12  "; printf("嘴角上扬\t");}
+				if(k == 3) { cout<<"AU15  "; printf("嘴角下拉\t");}
+				if(k == 4) { cout<<"AU17  "; printf("下巴皱起\t");}
+				if(k == 5) { cout<<"AU23  "; printf("嘴巴收紧\t");}
+				if(k == 6) { cout<<"AU26  "; printf("张大嘴\t");}
 
 				std::cout<<"  "<< au_buffer2[ls_num][k] << endl;
 			}
@@ -1147,20 +1153,30 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 		    char sendline[100];
 		    //int ls = 0;
-			for(int i = 0;i<=8;i++){
+			for(int i = 1;i<=7;i++){
 				sendline[i] = '0';
-				if(au_buffer1[0][i] > 3.0 && au_buffer1[1][i] > 3.0 && au_buffer1[2][i] > 3.0){
-					if(au_buffer2[0][i] == 1 && au_buffer2[1][i] == 1 && au_buffer2[2][i] == 1){
-						cout<<"识别出表情："<<i<<endl;
-						sendline[i] = '1';
-					}
+				if(au_buffer[i] == 3 && au_buffer0[i] >= 3){
+					sendline[i] = '1';
+					cout<<"识别出表情："<<i<<endl;
 				}
+				// if(au_buffer1[0][i] > 3.0 && au_buffer1[1][i] > 3.0 && au_buffer1[2][i] > 3.0){
+				// 	if(au_buffer2[0][i] == 1 && au_buffer2[1][i] == 1 && au_buffer2[2][i] == 1){
+				// 		cout<<"识别出表情："<<i<<endl;
+				// 		sendline[i] = '1';
+				// 	}
+				// }
 			}
+			for(int i = 1;i<=8;i++){
+				cout<<sendline[i];
+			}
+			cout<<endl;
 		    //sprintf(sendline, "Hello, world!");
 
 		    sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
 
 		    close(sockfd);
+
+		    cout << pose_estimate[3] << "  " << pose_estimate[4] << "  " << pose_estimate[5] << endl;
 		  
 			//test
 			// for(int j = 0;j<=3;j++){
@@ -1408,4 +1424,17 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 			}
 		}
 	}
+}
+
+//only use pose_estimate[3],[4],[5]
+bool estimateNodding(const cv::Vec6d& pose_estimate) {
+	bool nodding = false;
+
+	return nodding;
+}
+
+bool estimateShaking(const cv::Vec6d& pose_estimate) {
+	bool shaking = false;
+
+	return shaking;
 }
