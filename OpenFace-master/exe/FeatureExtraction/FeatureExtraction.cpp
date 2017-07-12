@@ -75,6 +75,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <list>
 
 #ifndef CONFIG_DIR
 #define CONFIG_DIR "~"
@@ -161,6 +162,7 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 // Some globals for tracking timing information for visualisation
 double fps_tracker = -1.0;
 int64 t0 = 0;
+const int WINDOW_SIZE = 10;
 
 // Visualising the results
 void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& face_model, const LandmarkDetector::FaceModelParameters& det_parameters, cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, int frame_count, double fx, double fy, double cx, double cy)
@@ -241,8 +243,8 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file, bool dynamic);
 
-bool estimateNodding(const cv::Vec6d& pose_estimate);
-bool estimateShaking(const cv::Vec6d& pose_estimate);
+bool estimateNodding(const list<cv::Vec6d> history_pose_estimate);
+bool estimateShaking(const list<cv::Vec6d> history_pose_estimate);
 
 int main (int argc, char **argv)
 {
@@ -545,6 +547,8 @@ int main (int argc, char **argv)
 		double time_stamp = 0;
 
 		INFO_STREAM( "Starting tracking");
+		list<cv::Vec6d> history_pose_estimate;
+
 		while(!captured_image.empty())
 		{		
 
@@ -631,8 +635,13 @@ int main (int argc, char **argv)
 				pose_estimate = LandmarkDetector::GetCorrectedPoseCamera(face_model, fx, fy, cx, cy);
 			}
 
-			bool nodding = estimateNodding(pose_estimate);
-			bool shaking = estimateShaking(pose_estimate);
+			history_pose_estimate.push_back(pose_estimate);
+			if (history_pose_estimate.size() > WINDOW_SIZE) {
+				history_pose_estimate.pop_front();
+			}
+
+			bool nodding = estimateNodding(history_pose_estimate);
+			bool shaking = estimateShaking(history_pose_estimate);
 
 			if (hog_output_file.is_open())
 			{
@@ -1429,14 +1438,16 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 }
 
 //only use pose_estimate[3],[4],[5]
-bool estimateNodding(const cv::Vec6d& pose_estimate) {
+bool estimateNodding(const list<cv::Vec6d> history_pose_estimate) {
 	bool nodding = false;
+	if (history_pose_estimate.size() < WINDOW_SIZE) return nodding;
 
 	return nodding;
 }
 
-bool estimateShaking(const cv::Vec6d& pose_estimate) {
+bool estimateShaking(const list<cv::Vec6d> history_pose_estimate) {
 	bool shaking = false;
+	if (history_pose_estimate.size() < WINDOW_SIZE) return shaking;
 
 	return shaking;
 }
