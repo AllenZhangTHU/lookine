@@ -11,7 +11,7 @@ import time, threading
 import base64
 import requests
 import matplotlib.pyplot as plt
-import serial
+
 import socket
 import pygame
 
@@ -130,7 +130,7 @@ while True:
         else:
             happinessT = 0
         if (happinessT == 3):
-            pygame.mixer.music.load('/Users/fatefaker/Downloads/happiness.mp3')
+            pygame.mixer.music.load('happiness.mp3')
             pygame.mixer.music.play()
 
         sadness = emotionDict['sadness']
@@ -139,7 +139,7 @@ while True:
         else:
             sadnessT = 0
         if (sadnessT == 3):
-            pygame.mixer.music.load('/Users/fatefaker/Downloads/sadness.mp3')
+            pygame.mixer.music.load('sadness.mp3')
             pygame.mixer.music.play()
 
         surprise = emotionDict['surprise']
@@ -148,7 +148,7 @@ while True:
         else:
             surpriseT = 0
         if (surpriseT == 3):
-            pygame.mixer.music.load('/Users/fatefaker/Downloads/surprise.mp3')
+            pygame.mixer.music.load('surprise.mp3')
             pygame.mixer.music.play()
 
         data = emotionDict.values()

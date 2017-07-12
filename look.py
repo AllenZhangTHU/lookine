@@ -57,7 +57,7 @@ while True:
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
     count += 1
-        c = cv2.waitKey(10)
+    c = cv2.waitKey(10)
     if c & 0xFF == ord('q'):
         break
 cap.release()
