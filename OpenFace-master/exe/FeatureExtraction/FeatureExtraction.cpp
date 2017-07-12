@@ -1442,12 +1442,19 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 bool estimateNodding(const list<cv::Vec6d> history_pose_estimate) {
 	bool nodding = false;
 	if (history_pose_estimate.size() < WINDOW_SIZE) return nodding;
+
 	static int a = 0;
 	static int b = 0;
 	static int c = 0;
 	list<cv::Vec6d>::iterator it1 = history_pose_estimate.end();
 	list<cv::Vec6d>::iterator it2 = it1 - 1;
-	double drx = *it1[3] - *it2[3];
+	double drx = (*it1)[3] - (*it2)[3];
+	if ((abs(drx)<0.05))
+		c +=1;
+	else
+		c = 0;
+	if (c >2 )
+		b = 0;
 	if ((drx*a<0)||(abs(drx)<0.05))
 		a = 0;
 	if (abs(drx)>0.05)
@@ -1461,7 +1468,6 @@ bool estimateNodding(const list<cv::Vec6d> history_pose_estimate) {
 		return true;
 	return false;
 
-
 	return nodding;
 }
 
@@ -1474,7 +1480,7 @@ bool estimateShaking(const list<cv::Vec6d> history_pose_estimate) {
 	static int c = 0;
 	list<cv::Vec6d>::iterator it1 = history_pose_estimate.end();
 	list<cv::Vec6d>::iterator it2 = it1 - 1;
-	double drx = *it1[4] - *it2[4];
+	double drx = (*it1)[4] - (*it2)[4];
 	if ((abs(drx)<0.05))
 		c +=1;
 	else
