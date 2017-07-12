@@ -1449,16 +1449,17 @@ bool estimateNodding(const list<cv::Vec6d> history_pose_estimate) {
 	list<cv::Vec6d>::iterator it1 = history_pose_estimate.end();
 	list<cv::Vec6d>::iterator it2 = it1 - 1;
 	double drx = (*it1)[3] - (*it2)[3];
-	if ((abs(drx)<0.05))
+	
+	if ((drx*a<0)||(abs(drx)<0.05))
+		a = 0;
+	if (abs(drx)>0.05)
+		a+=(drx>0)?1:-1;
+	if (abs(a)<=1)
 		c +=1;
 	else
 		c = 0;
 	if (c >2 )
 		b = 0;
-	if ((drx*a<0)||(abs(drx)<0.05))
-		a = 0;
-	if (abs(drx)>0.05)
-		a+=(drx>0)?1:-1;
 	if (abs(a)>3 && a*b<=0)
 	{
 		b = -b;
@@ -1481,16 +1482,17 @@ bool estimateShaking(const list<cv::Vec6d> history_pose_estimate) {
 	list<cv::Vec6d>::iterator it1 = history_pose_estimate.end();
 	list<cv::Vec6d>::iterator it2 = it1 - 1;
 	double drx = (*it1)[4] - (*it2)[4];
-	if ((abs(drx)<0.05))
+	
+	if ((drx*a<0)||(abs(drx)<0.05))
+		a = 0;
+	if (abs(drx)>0.05)
+		a+=(drx>0)?1:-1;
+	if (abs(a)<=1)
 		c +=1;
 	else
 		c = 0;
 	if (c >2 )
 		b = 0;
-	if ((drx*a<0)||(abs(drx)<0.05))
-		a = 0;
-	if (abs(drx)>0.05)
-		a+=(drx>0)?1:-1;
 	if (abs(a)>3 && a*b<=0)
 	{
 		b = -b;
