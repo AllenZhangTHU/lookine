@@ -243,8 +243,14 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file, bool dynamic);
 
-bool estimateNodding(const list<cv::Vec6d> history_pose_estimate);
-bool estimateShaking(const list<cv::Vec6d> history_pose_estimate);
+struct PEloc {
+	double x;
+	double y;
+	double z;
+};
+
+bool estimateNodding(const list<PEloc> history_pose_estimate);
+bool estimateShaking(const list<PEloc> history_pose_estimate);
 
 int main (int argc, char **argv)
 {
@@ -547,7 +553,7 @@ int main (int argc, char **argv)
 		double time_stamp = 0;
 
 		INFO_STREAM( "Starting tracking");
-		list<cv::Vec6d> history_pose_estimate;
+		list<PEloc> history_pose_estimate;
 
 		while(!captured_image.empty())
 		{		
@@ -635,7 +641,12 @@ int main (int argc, char **argv)
 				pose_estimate = LandmarkDetector::GetCorrectedPoseCamera(face_model, fx, fy, cx, cy);
 			}
 
-			history_pose_estimate.push_back(pose_estimate);
+			PEloc pe;
+			pe.x = pose_estimate[3];
+			pe.y = pose_estimate[4];
+			pe.z = pose_estimate[5];
+
+			history_pose_estimate.push_back(pe);
 			if (history_pose_estimate.size() > WINDOW_SIZE) {
 				history_pose_estimate.pop_front();
 			}
@@ -1439,16 +1450,16 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 }
 
 //only use pose_estimate[3],[4],[5]
-bool estimateNodding(const list<cv::Vec6d> history_pose_estimate) {
+bool estimateNodding(const list<PEloc> history_pose_estimate) {
 	bool nodding = false;
 	if (history_pose_estimate.size() < WINDOW_SIZE) return nodding;
 
 	static int a = 0;
 	static int b = 0;
 	static int c = 0;
-	list<cv::Vec6d>::iterator it1 = history_pose_estimate.end();
-	list<cv::Vec6d>::iterator it2 = it1 - 1;
-	double drx = (*it1)[3] - (*it2)[3];
+	list<PEloc>::const_iterator it1 = history_pose_estimate.end();
+	list<PEloc>::const_iterator it2 = it1--;
+	double drx = (*it1).x - (*it2).x;
 	if ((abs(drx)<0.05))
 		c +=1;
 	else
@@ -1471,16 +1482,16 @@ bool estimateNodding(const list<cv::Vec6d> history_pose_estimate) {
 	return nodding;
 }
 
-bool estimateShaking(const list<cv::Vec6d> history_pose_estimate) {
+bool estimateShaking(const list<PEloc> history_pose_estimate) {
 	bool shaking = false;
 	if (history_pose_estimate.size() < WINDOW_SIZE) return shaking;
 
 	static int a = 0;
 	static int b = 0;
 	static int c = 0;
-	list<cv::Vec6d>::iterator it1 = history_pose_estimate.end();
-	list<cv::Vec6d>::iterator it2 = it1 - 1;
-	double drx = (*it1)[4] - (*it2)[4];
+	list<PEloc>::const_iterator it1 = history_pose_estimate.end();
+	list<PEloc>::const_iterator it2 = it1--;
+	double drx = (*it1).y - (*it2).y;
 	if ((abs(drx)<0.05))
 		c +=1;
 	else
