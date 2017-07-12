@@ -19,7 +19,11 @@ happinessT = 0
 sadnessT = 0
 surpriseT = 0
 
+# pygame.init()
 pygame.mixer.init()
+# pygame.time.delay(1000)
+pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+pygame.mixer.music.play()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
@@ -117,6 +121,8 @@ while True:
     # sys.stdout.flush()
     # sys.stdout.write(str(control) + '\r')
     # sys.stdout.flush()
+
+
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(img, str(control) , (10, 500), font, 3, (0, 0, 255), 4,False)
     cv2.imshow("lookine", img)
