@@ -232,6 +232,8 @@ static float au_buffer1[4][10] = {0};
 static bool  au_buffer2[4][10] = {0};
 static int au_buffer[10] = {0};
 static int au_buffer0[10] = {0};
+static bool ls_nodding = 0;
+static bool ls_shaking = 0;
 
 // Output all of the information into one file in one go (quite a few parameters, but simplifies the flow)
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
@@ -651,8 +653,21 @@ int main (int argc, char **argv)
 				history_pose_estimate.pop_front();
 			}
 
-			bool nodding = estimateNodding(history_pose_estimate);
-			bool shaking = estimateShaking(history_pose_estimate);
+			bool nodding = false;
+			bool shaking = false;
+			if (ls_nodding != estimateNodding(history_pose_estimate))
+			{
+				if (ls_nodding == false)
+					nodding = true;
+				ls_nodding = !ls_nodding;
+			}
+
+			if (ls_shaking != estimateShaking(history_pose_estimate))
+			{
+				if (ls_shaking == false)
+					shaking = true;
+				ls_shaking = !ls_shaking;
+			}
 
 			if (hog_output_file.is_open())
 			{
@@ -1188,8 +1203,13 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 		    //sprintf(sendline, "Hello, world!");
 
+			if(nodding == true) sendline[8] = '1';
+			if(nodding == false) sendline[8] = '0';
+			if(shaking == true) sendline[9] = '1';
+			if(shaking == false) sendline[9] = '0';
+
 			bool ls_send = false;
-			for(int i = 1;i<=7;i++){
+			for(int i = 1;i<=9;i++){
 				if(sendline[i] == '1') {
 					ls_send = true;
 				}
@@ -1197,7 +1217,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			
 			if(ls_send == true)
 			{
-				for(int i = 1;i<=7;i++){
+				for(int i = 1;i<=9;i++){
 					cout<<sendline[i];
 				}
 				cout<<endl;

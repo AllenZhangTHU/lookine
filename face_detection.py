@@ -78,6 +78,16 @@ def listentoCPP():
                 pygame.mixer.music.play()
                 time.sleep(1.6)
                 print('张大嘴')
+            if data[8] == '1':
+                pygame.mixer.music.load('./audio/aus/点头.mp3')
+                pygame.mixer.music.play()
+                time.sleep(1.6)
+                print('点头')
+            if data[9] == '1':
+                pygame.mixer.music.load('./audio/aus/摇头.mp3')
+                pygame.mixer.music.play()
+                time.sleep(1.6)
+                print('摇头')
         except Exception as e:
         # print("[Errno {0}] {1}".format(e.errno, e.strerror))
             pass
