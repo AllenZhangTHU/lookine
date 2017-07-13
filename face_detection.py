@@ -22,8 +22,8 @@ surpriseT = 0
 # pygame.init()
 pygame.mixer.init()
 # pygame.time.delay(1000)
-pygame.mixer.music.load('./audio/expressions/surprise.mp3')
-pygame.mixer.music.play()
+#pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+#pygame.mixer.music.play()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
