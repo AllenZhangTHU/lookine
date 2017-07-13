@@ -1159,13 +1159,25 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 				// 	}
 				// }
 			}
-			for(int i = 1;i<=8;i++){
-				cout<<sendline[i];
-			}
-			cout<<endl;
+
 		    //sprintf(sendline, "Hello, world!");
 
-		    sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+			bool ls_send = false;
+			for(int i = 1;i<=7;i++){
+				if(sendline[i] == '1') {
+					ls_send = true;
+				}
+			}
+			
+			if(ls_send == true)
+			{
+				for(int i = 1;i<=7;i++){
+					cout<<sendline[i];
+				}
+				cout<<endl;
+				//cout<<"here"<<endl;
+		    	sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+		    }
 
 		    close(sockfd);
 		  
