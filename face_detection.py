@@ -18,12 +18,16 @@ import pygame
 happinessT = 0
 sadnessT = 0
 surpriseT = 0
+fearT = 0
+disgustT = 0
+angerT = 0
 
 # pygame.init()
 pygame.mixer.init()
-# pygame.time.delay(1000)
-#pygame.mixer.music.load('./audio/expressions/surprise.mp3')
-#pygame.mixer.music.play()
+# pygame.mixer.music.load('./audio/aus/扬眉.mp3')
+# pygame.mixer.music.play()
+# pygame.mixer.music.load('./audio/aus/皱眉.mp3')
+# pygame.mixer.music.play()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
@@ -36,6 +40,33 @@ def listentoCPP():
         data, addr = s.recvfrom(1024)
         type(data)
         print(data)
+        try:
+            print type(data)
+            print type(data[0])
+            if data[1] == '1':
+                pygame.mixer.music.load('./audio/aus/扬眉.mp3')
+                pygame.mixer.music.play()
+            if data[2] == '1':
+                pygame.mixer.music.load('./audio/aus/皱眉.mp3')
+                pygame.mixer.music.play()
+            if data[3] == '1':
+                pygame.mixer.music.load('./audio/aus/嘴角上扬.mp3')
+                pygame.mixer.music.play()
+            if data[4] == '1':
+                pygame.mixer.music.load('./audio/aus/嘴角下拉.mp3')
+                pygame.mixer.music.play()
+            if data[5] == '1':
+                pygame.mixer.music.load('./audio/aus/下巴皱起.mp3')
+                pygame.mixer.music.play()
+            if data[6] == '1':
+                pygame.mixer.music.load('./audio/aus/嘴巴收紧.mp3')
+                pygame.mixer.music.play()
+            if data[7] == '1':
+                pygame.mixer.music.load('./audio/aus/张大嘴.mp3')
+                pygame.mixer.music.play()
+        except Exception as e:
+        # print("[Errno {0}] {1}".format(e.errno, e.strerror))
+            pass
 t = threading.Thread(target=listentoCPP, args=())
 t.start()
 
@@ -136,7 +167,7 @@ while True:
         else:
             happinessT = 0
         if (happinessT == 3):
-            pygame.mixer.music.load('happiness.mp3')
+            pygame.mixer.music.load('./audio/expressions/happiness.mp3')
             pygame.mixer.music.play()
 
         sadness = emotionDict['sadness']
@@ -145,7 +176,7 @@ while True:
         else:
             sadnessT = 0
         if (sadnessT == 3):
-            pygame.mixer.music.load('sadness.mp3')
+            pygame.mixer.music.load('./audio/expressions/sadness.mp3')
             pygame.mixer.music.play()
 
         surprise = emotionDict['surprise']
@@ -154,7 +185,34 @@ while True:
         else:
             surpriseT = 0
         if (surpriseT == 3):
-            pygame.mixer.music.load('surprise.mp3')
+            pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+            pygame.mixer.music.play()
+
+        fear = emotionDict['fear']
+        if (fear >50):
+            fearT += 1
+        else:
+            fearT = 0
+        if (fearT == 3):
+            pygame.mixer.music.load('./audio/expressions/fear.mp3')
+            pygame.mixer.music.play()
+
+        disgust = emotionDict['disgust']
+        if (disgust >50):
+            disgustT += 1
+        else:
+            disgustT = 0
+        if (disgustT == 3):
+            pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+            pygame.mixer.music.play()
+
+        anger = emotionDict['anger']
+        if (anger >50):
+            angerT += 1
+        else:
+            angerT = 0
+        if (angerT == 3):
+            pygame.mixer.music.load('./audio/expressions/anger.mp3')
             pygame.mixer.music.play()
 
         data = emotionDict.values()
