@@ -75,6 +75,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <list>
 
 #ifndef CONFIG_DIR
 #define CONFIG_DIR "~"
@@ -161,6 +162,7 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 // Some globals for tracking timing information for visualisation
 double fps_tracker = -1.0;
 int64 t0 = 0;
+const int WINDOW_SIZE = 10;
 
 // Visualising the results
 void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& face_model, const LandmarkDetector::FaceModelParameters& det_parameters, cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, int frame_count, double fx, double fy, double cx, double cy)
@@ -235,11 +237,20 @@ static int au_buffer0[10] = {0};
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
 	const LandmarkDetector::CLNF& face_model, int frame_count, double time_stamp, bool detection_success,
-	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
+	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, 
+	bool nodding, bool shaking, double fx, double fy, double cx, double cy,
 	const FaceAnalysis::FaceAnalyser& face_analyser);
 
 void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file, bool dynamic);
 
+struct PEloc {
+	double x;
+	double y;
+	double z;
+};
+
+bool estimateNodding(const list<PEloc> history_pose_estimate);
+bool estimateShaking(const list<PEloc> history_pose_estimate);
 
 int main (int argc, char **argv)
 {
@@ -542,6 +553,8 @@ int main (int argc, char **argv)
 		double time_stamp = 0;
 
 		INFO_STREAM( "Starting tracking");
+		list<PEloc> history_pose_estimate;
+
 		while(!captured_image.empty())
 		{		
 
@@ -628,6 +641,19 @@ int main (int argc, char **argv)
 				pose_estimate = LandmarkDetector::GetCorrectedPoseCamera(face_model, fx, fy, cx, cy);
 			}
 
+			PEloc pe;
+			pe.x = pose_estimate[3];
+			pe.y = pose_estimate[4];
+			pe.z = pose_estimate[5];
+
+			history_pose_estimate.push_back(pe);
+			if (history_pose_estimate.size() > WINDOW_SIZE) {
+				history_pose_estimate.pop_front();
+			}
+
+			bool nodding = estimateNodding(history_pose_estimate);
+			bool shaking = estimateShaking(history_pose_estimate);
+
 			if (hog_output_file.is_open())
 			{
 				output_HOG_frame(&hog_output_file, detection_success, hog_descriptor, num_hog_rows, num_hog_cols);
@@ -668,7 +694,7 @@ int main (int argc, char **argv)
 			// Output the landmarks, pose, gaze, parameters and AUs
 			outputAllFeatures(&output_file, output_2D_landmarks, output_3D_landmarks, output_model_params, output_pose, output_AUs, output_gaze,
 				face_model, frame_count, time_stamp, detection_success, gazeDirection0, gazeDirection1,
-				pose_estimate, fx, fy, cx, cy, face_analyser);
+				pose_estimate, nodding, shaking, fx, fy, cx, cy, face_analyser);
 
 			// output the tracked video
 			if(!tracked_videos_output.empty())
@@ -832,7 +858,8 @@ void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, boo
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
 	const LandmarkDetector::CLNF& face_model, int frame_count, double time_stamp, bool detection_success,
-	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
+	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, 
+	bool nodding, bool shaking, double fx, double fy, double cx, double cy,
 	const FaceAnalysis::FaceAnalyser& face_analyser)
 {
 
@@ -1180,6 +1207,11 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		    }
 
 		    close(sockfd);
+
+		    cout << pose_estimate[3] << "  " << pose_estimate[4] << "  " << pose_estimate[5] << endl;
+		    cout << "点头：" << (nodding ? "是" : "否") << endl;
+		    cout << "摇头：" << (shaking ? "是" : "否") << endl;
+
 		  
 			//test
 			// for(int j = 0;j<=3;j++){
@@ -1427,4 +1459,69 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 			}
 		}
 	}
+}
+
+//only use pose_estimate[3],[4],[5]
+bool estimateNodding(const list<PEloc> history_pose_estimate) {
+	bool nodding = false;
+	if (history_pose_estimate.size() < WINDOW_SIZE) return nodding;
+
+	static int a = 0;
+	static int b = 0;
+	static int c = 0;
+	list<PEloc>::const_iterator it1 = history_pose_estimate.end();
+	list<PEloc>::const_iterator it2 = it1--;
+	double drx = (*it1).x - (*it2).x;
+	if ((drx*a<0)||(abs(drx)<0.05))
+		a = 0;
+	if (abs(drx)>0.05)
+		a+=(drx>0)?1:-1;
+	if (abs(a)<=1)
+		c +=1;
+	else
+		c = 0;
+	if (c >2 )
+		b = 0;
+	if (abs(a)>3 && a*b<=0)
+	{
+		b = -b;
+		b+= (b>0)?1:-1;
+	}
+	if (abs(b)>=3)
+		return true;
+	return false;
+
+	return nodding;
+}
+
+bool estimateShaking(const list<PEloc> history_pose_estimate) {
+	bool shaking = false;
+	if (history_pose_estimate.size() < WINDOW_SIZE) return shaking;
+
+	static int a = 0;
+	static int b = 0;
+	static int c = 0;
+	list<PEloc>::const_iterator it1 = history_pose_estimate.end();
+	list<PEloc>::const_iterator it2 = it1--;
+	double drx = (*it1).y - (*it2).y;
+	if ((drx*a<0)||(abs(drx)<0.05))
+		a = 0;
+	if (abs(drx)>0.05)
+		a+=(drx>0)?1:-1;
+	if (abs(a)<=1)
+		c +=1;
+	else
+		c = 0;
+	if (c >2 )
+		b = 0;
+	if (abs(a)>3 && a*b<=0)
+	{
+		b = -b;
+		b+= (b>0)?1:-1;
+	}
+	if (abs(b)>=3)
+		return true;
+	return false;
+
+	return shaking;
 }
