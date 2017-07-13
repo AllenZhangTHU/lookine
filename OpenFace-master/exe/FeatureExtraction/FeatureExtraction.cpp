@@ -1462,6 +1462,7 @@ void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<d
 
 //only use pose_estimate[3],[4],[5]
 bool estimateNodding(const deque<PEloc> history_pose_estimate) {
+	const double MAGIC_NUMBER = 0.03;
 	bool nodding = false;
 	if (history_pose_estimate.size() < WINDOW_SIZE) return nodding;
 
@@ -1470,23 +1471,27 @@ bool estimateNodding(const deque<PEloc> history_pose_estimate) {
 	static int c = 0;
 
 	double drx = history_pose_estimate[WINDOW_SIZE - 1].x - history_pose_estimate[WINDOW_SIZE - 2].x;
-	if ((drx*a<0)||(abs(drx)<0.1))
+	
+
+	if ((drx*a<0)||(abs(drx)<MAGIC_NUMBER))
 		a = 0;
-	if (abs(drx)>0.1)
+	if (abs(drx)>MAGIC_NUMBER)
 		a+=(drx>0)?1:-1;
 	if (abs(a)<=1)
 		c +=1;
 	else
 		c = 0;
-	if (c >2 )
+	if (c >4 )
 		b = 0;
-	if (abs(a)>3 && a*b<=0)
+	if (abs(a)>=3 && a*b<=0)
 	{
 		b = -b;
-		b+= (b>0)?1:-1;
+		b+= (a>0)?1:-1;
 	}
-	cout << 2 << endl;
-	if (abs(b)>=3)
+
+	system("clear");
+	cout << a << "   " << b << "   " << c << "   " << drx << endl;
+	if (abs(b)>=3 || b == -2)
 		return true;
 	return false;
 
@@ -1513,13 +1518,12 @@ bool estimateShaking(const deque<PEloc> history_pose_estimate) {
 		c = 0;
 	if (c >4 )
 		b = 0;
-	if (abs(a)>3 && a*b<=0)
+	if (abs(a)>=3 && a*b<=0)
 	{
 		b = -b;
-		b+= (b>0)?1:-1;
+		b+= (a>0)?1:-1;
 	}
 
-	system("clear");
 	cout << a << "   " << b << "   " << c << "   " << drx << endl;
 	if (abs(b)>=3)
 		return true;
