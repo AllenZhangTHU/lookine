@@ -57,7 +57,8 @@ pygame.mixer.music.load('surprise.mp3')
 pygame.mixer.music.play()
 #time.sleep(2)
 print('嘴角上扬')
-
+while pygame.mixer.music.get_busy():
+	time.sleep(1)
 # pygame.mixer.music.load('/Users/steven/Desktop/Lookine/lookine/audio/aus/嘴角下拉.mp3')
 # pygame.mixer.music.play()
 # time.sleep(2.1)
