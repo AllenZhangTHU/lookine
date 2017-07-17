@@ -185,65 +185,66 @@ while True:
         emotionDict = emotion["faces"][0]["attributes"]["emotion"]
         # print(len(emotion["faces"]))
         # print(emotionDict)
-        happiness = emotionDict['happiness']
-        if (happiness >80):
-            happinessT += 1
-        else:
-            happinessT = 0
-        if (happinessT == 3):
-            pygame.mixer.music.load('./audio/expressions/happiness.mp3')
-            pygame.mixer.music.play()
-            time.sleep(1.6)
+        
+        # happiness = emotionDict['happiness']
+        # if (happiness >80):
+        #     happinessT += 1
+        # else:
+        #     happinessT = 0
+        # if (happinessT == 3):
+        #     pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+        #     pygame.mixer.music.play()
+        #     time.sleep(1.6)
 
-        sadness = emotionDict['sadness']
-        if (sadness >80):
-            sadnessT += 1
-        else:
-            sadnessT = 0
-        if (sadnessT == 3):
-            pygame.mixer.music.load('./audio/expressions/sadness.mp3')
-            pygame.mixer.music.play()
-            time.sleep(1.6)
+        # sadness = emotionDict['sadness']
+        # if (sadness >80):
+        #     sadnessT += 1
+        # else:
+        #     sadnessT = 0
+        # if (sadnessT == 3):
+        #     pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+        #     pygame.mixer.music.play()
+        #     time.sleep(1.6)
 
-        surprise = emotionDict['surprise']
-        if (surprise >80):
-            surpriseT += 1
-        else:
-            surpriseT = 0
-        if (surpriseT == 3):
-            pygame.mixer.music.load('./audio/expressions/surprise.mp3')
-            pygame.mixer.music.play()
-            time.sleep(1.6)
+        # surprise = emotionDict['surprise']
+        # if (surprise >80):
+        #     surpriseT += 1
+        # else:
+        #     surpriseT = 0
+        # if (surpriseT == 3):
+        #     pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+        #     pygame.mixer.music.play()
+        #     time.sleep(1.6)
 
-        fear = emotionDict['fear']
-        if (fear >80):
-            fearT += 1
-        else:
-            fearT = 0
-        if (fearT == 3):
-            pygame.mixer.music.load('./audio/expressions/fear.mp3')
-            pygame.mixer.music.play()
-            time.sleep(1.6)
+        # fear = emotionDict['fear']
+        # if (fear >80):
+        #     fearT += 1
+        # else:
+        #     fearT = 0
+        # if (fearT == 3):
+        #     pygame.mixer.music.load('./audio/expressions/fear.mp3')
+        #     pygame.mixer.music.play()
+        #     time.sleep(1.6)
 
-        disgust = emotionDict['disgust']
-        if (disgust >50):
-            disgustT += 1
-        else:
-            disgustT = 0
-        if (disgustT == 3):
-            pygame.mixer.music.load('./audio/expressions/disgust.mp3')
-            pygame.mixer.music.play()
-            time.sleep(1.6)
+        # disgust = emotionDict['disgust']
+        # if (disgust >50):
+        #     disgustT += 1
+        # else:
+        #     disgustT = 0
+        # if (disgustT == 3):
+        #     pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+        #     pygame.mixer.music.play()
+        #     time.sleep(1.6)
 
-        anger = emotionDict['anger']
-        if (anger >50):
-            angerT += 1
-        else:
-            angerT = 0
-        if (angerT == 3):
-            pygame.mixer.music.load('./audio/expressions/anger.mp3')
-            pygame.mixer.music.play()
-            time.sleep(1.6)
+        # anger = emotionDict['anger']
+        # if (anger >50):
+        #     angerT += 1
+        # else:
+        #     angerT = 0
+        # if (angerT == 3):
+        #     pygame.mixer.music.load('./audio/expressions/anger.mp3')
+        #     pygame.mixer.music.play()
+        #     time.sleep(1.6)
 
         data = emotionDict.values()
         labels = emotionDict.keys()

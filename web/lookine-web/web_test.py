@@ -1,8 +1,9 @@
 #!/usr/bin/python
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
+import time, threading
 
-PORT_NUMBER = 8003
+PORT_NUMBER = 8081
 
 #This class will handles any incoming request from
 #the browser 
@@ -47,17 +48,21 @@ class myHandler(BaseHTTPRequestHandler):
 
 		except IOError:
 			self.send_error(404,'File Not Found: %s' % self.path)
+def runserver(portNum):
+	try:
+		#Create a web server and define the handler to manage the
+		#incoming request
+		server = HTTPServer(('', portNum), myHandler)
+		print 'Started httpserver on port ' , PORT_NUMBER
+		#Wait forever for incoming htto requests
+		server.serve_forever()
+	except KeyboardInterrupt:
+		print '^C received, shutting down the web server'
+		server.socket.close()
 
-try:
-	#Create a web server and define the handler to manage the
-	#incoming request
-	server = HTTPServer(('', PORT_NUMBER), myHandler)
-	print 'Started httpserver on port ' , PORT_NUMBER
-	
-	#Wait forever for incoming htto requests
-	server.serve_forever()
 
-except KeyboardInterrupt:
-	print '^C received, shutting down the web server'
-	server.socket.close()
+t = threading.Thread(target=runserver, args=(PORT_NUMBER,))
+t.start()
+print "222222"
+t.join()
 	
