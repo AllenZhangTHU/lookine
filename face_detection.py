@@ -195,7 +195,7 @@ while True:
         # print(len(emotion["faces"]))
         # print(emotionDict)
         happiness = emotionDict['happiness']
-        if (happiness >80):
+        if (happiness >75):
             happinessT += 1
         else:
             happinessT = 0
@@ -206,7 +206,7 @@ while True:
             pygame.mixer.music.play()
 
         sadness = emotionDict['sadness']
-        if (sadness >80):
+        if (sadness >75):
             sadnessT += 1
         else:
             sadnessT = 0
@@ -217,7 +217,7 @@ while True:
             pygame.mixer.music.play()
 
         surprise = emotionDict['surprise']
-        if (surprise >80):
+        if (surprise >75):
             surpriseT += 1
         else:
             surpriseT = 0
@@ -228,7 +228,7 @@ while True:
             pygame.mixer.music.play()
 
         fear = emotionDict['fear']
-        if (fear >80):
+        if (fear >75):
             fearT += 1
         else:
             fearT = 0
