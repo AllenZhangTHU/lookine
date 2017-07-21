@@ -59,6 +59,7 @@
 #include <Face_utils.h>
 #include <FaceAnalyser.h>
 #include <GazeEstimation.h>
+#include <pthread.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -107,6 +108,7 @@ static bool head_result[2] = {0};
 static bool all_results[15] = {0};
 static string final_result;
 static int num = 0;
+static int expN[6] = {0};
 
 using namespace boost::filesystem;
 
@@ -230,7 +232,7 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 	if (!det_parameters.quiet_mode)
 	{
 		cv::namedWindow("tracking_result", 1);
-		cvResizeWindow("tracking_result", 1240, 722);
+		cvResizeWindow("tracking_result", 1240, 600);
 		cv::Mat bg = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/bg.png");
 		cv::Mat imageROI;
 		cv::Mat imageLOGO;
@@ -272,6 +274,11 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 		for(int i = 0;i <= 6; i++){
 			au_result[i] = (au_result[i]/5.0)*212;
 		}
+
+		for(int i = 0;i <= 6; i++){
+			expressions_result[i] = (expressions_result[i]/100.0)*212;
+		}
+
 		rectangle(bg, cvPoint(992, 285), cvPoint(992+(int)au_result[0], 298), CV_RGB(166, 217, 235), -1, 4, 0 ); 
 		rectangle(bg, cvPoint(992, 309), cvPoint(992+(int)au_result[1], 322), CV_RGB(66,66,66), -1, 4, 0 ); 
 		rectangle(bg, cvPoint(992, 333), cvPoint(992+(int)au_result[2], 346), CV_RGB(49,174,187), -1, 4, 0 ); 
@@ -280,18 +287,18 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 		rectangle(bg, cvPoint(992, 404), cvPoint(992+(int)au_result[5], 417), CV_RGB(246,166,35), -1, 4, 0 ); 
 		rectangle(bg, cvPoint(992, 428), cvPoint(992+(int)au_result[6], 441), CV_RGB(13,156,236), -1, 4, 0 );
 
-		rectangle(bg, cvPoint(936, 495), cvPoint(1062, 508), CV_RGB(166, 217, 235), -1, 4, 0 ); 
-		rectangle(bg, cvPoint(936, 519), cvPoint(1082, 532), CV_RGB(66,66,66), -1, 4, 0 ); 
-		rectangle(bg, cvPoint(936, 543), cvPoint(1082, 556), CV_RGB(49,174,187), -1, 4, 0 ); 
-		rectangle(bg, cvPoint(936, 567), cvPoint(1082, 579), CV_RGB(168,121,176), -1, 4, 0 ); 
-		rectangle(bg, cvPoint(936, 590), cvPoint(1082, 603), CV_RGB(177,177,177), -1, 4, 0 ); 
-		rectangle(bg, cvPoint(936, 614), cvPoint(1082, 627), CV_RGB(246,166,35), -1, 4, 0 ); 
-		rectangle(bg, cvPoint(936, 637), cvPoint(1082, 650), CV_RGB(13,156,236), -1, 4, 0 );  
+		rectangle(bg, cvPoint(936, 495), cvPoint(936+(int)expressions_result[0], 508), CV_RGB(166, 217, 235), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 519), cvPoint(936+(int)expressions_result[1], 532), CV_RGB(66,66,66), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 543), cvPoint(936+(int)expressions_result[2], 556), CV_RGB(49,174,187), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 567), cvPoint(936+(int)expressions_result[3], 579), CV_RGB(168,121,176), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 590), cvPoint(936+(int)expressions_result[4], 603), CV_RGB(177,177,177), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 614), cvPoint(936+(int)expressions_result[5], 627), CV_RGB(246,166,35), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 637), cvPoint(936+(int)expressions_result[6], 650), CV_RGB(13,156,236), -1, 4, 0 );  
 
 		// rectangle(bg, cvPoint(895, 285), cvPoint(925, 405), CV_RGB(226, 226, 226), -1, 4, 0 ); 
 
 		bool op = false;
-		for(int i = 0;i<=8;i++){
+		for(int i = 0;i<=14;i++){
 			if(all_results[i] == true) {
 				op = true;
 			}
@@ -310,6 +317,13 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 			if(all_results[4] == true){final_result+="Chin Raiser  ";}
 			if(all_results[5] == true){final_result+="Lip Tightener  ";}
 			if(all_results[6] == true){final_result+="Mouth Stretch  ";}
+
+			if(all_results[9] == true){final_result+="Happy  ";}
+			if(all_results[10] == true){final_result+="Sad  ";}
+			if(all_results[11] == true){final_result+="Surprise  ";}
+			if(all_results[12] == true){final_result+="Fear  ";}
+			if(all_results[13] == true){final_result+="Disgust  ";}
+			if(all_results[14] == true){final_result+="Anger  ";}
 		}
 		else{
 			num++;
@@ -361,8 +375,45 @@ struct PEloc {
 bool estimateNodding(const deque<PEloc> history_pose_estimate);
 bool estimateShaking(const deque<PEloc> history_pose_estimate);
 
+// void *say_hello(void* args)
+// {
+
+// 	// while(true){
+// 	// 	cout << "Hello Runoob！" << endl;
+// 	// }
+
+//     // int sockfd;
+//     // struct sockaddr_in servaddr;
+
+//     // sockfd = socket(PF_INET, SOCK_DGRAM, 0);
+
+//     // bzero(&servaddr, sizeof(servaddr));
+//     // servaddr.sin_family = AF_INET;
+//     // servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+//     // servaddr.sin_port = htons(23334);
+
+//     // bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+
+//     // int n;
+//     // char recvline[1024];
+//     // while(true){
+//     //     recvfrom(sockfd, recvline, 1024, 0, NULL, NULL);
+//     //     printf("%s\n", recvline);
+//     // }
+// }
+
+
 int main (int argc, char **argv)
 {
+	// pthread_t tids;
+ //    int ret = pthread_create(&tids, NULL, say_hello, NULL);
+ //    if (ret != 0)
+ //    {
+ //       cout << "pthread_create error: error_code=" << ret << endl;
+ //    }
+ //    // pthread_exit(NULL);
+
+ //    cout<<"out"<<endl;
 
 	vector<string> arguments = get_arguments(argc, argv);
 
@@ -664,6 +715,7 @@ int main (int argc, char **argv)
 		INFO_STREAM( "Starting tracking");
 		deque<PEloc> history_pose_estimate;
 
+		//cout<<"here"<<endl;
 		while(!captured_image.empty())
 		{		
 
@@ -877,9 +929,8 @@ int main (int argc, char **argv)
 					reported_completion = reported_completion + 1;
 				}
 			}
-
 		}
-		
+
 		output_file.close();
 
 		if (output_files.size() > 0 && output_AUs)
@@ -1191,37 +1242,37 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			au_buffer1[ls_num][0] = max(max(au_buffer1[ls_num][0],ls_au02),ls_au05);
 			au_result[0] = au_buffer1[ls_num][0];
 			// au_buffer1[ls_num][0] = (au_buffer1[ls_num][0] + ls_au02 + ls_au05) / 3.0;
-			if(au_buffer1[ls_num][0] >= 3){au_buffer[1]+=1;} else{au_buffer[1]=0;}
+			if(au_buffer1[ls_num][0] >= 3.5){au_buffer[1]+=1;} else{au_buffer[1]=0;}
 
  			// print the result
-			for(int k = 0; k<=6; k++){
-				int ls = (int) (au_buffer1[ls_num][k] / 0.1);
+			// for(int k = 0; k<=6; k++){
+			// 	int ls = (int) (au_buffer1[ls_num][k] / 0.1);
 
-				if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
-				if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
-				if(k == 2) { cout<<"AU12  "; printf("嘴角上扬\t");}
-				if(k == 3) { cout<<"AU15  "; printf("嘴角下拉\t");}
-				if(k == 4) { cout<<"AU17  "; printf("下巴皱起\t");}
-				if(k == 5) { cout<<"AU23  "; printf("嘴巴收紧\t");}
-				if(k == 6) { cout<<"AU26  "; printf("张大嘴\t");}
+			// 	if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
+			// 	if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
+			// 	if(k == 2) { cout<<"AU12  "; printf("嘴角上扬\t");}
+			// 	if(k == 3) { cout<<"AU15  "; printf("嘴角下拉\t");}
+			// 	if(k == 4) { cout<<"AU17  "; printf("下巴皱起\t");}
+			// 	if(k == 5) { cout<<"AU23  "; printf("嘴巴收紧\t");}
+			// 	if(k == 6) { cout<<"AU26  "; printf("张大嘴\t");}
 
-				for(int i = 1;i<=ls;i++){
-					cout<<"▉";
-				}
-				std::cout<<"  "<< au_buffer1[ls_num][k] << endl;
-			}
+			// 	for(int i = 1;i<=ls;i++){
+			// 		cout<<"▉";
+			// 	}
+			// 	std::cout<<"  "<< au_buffer1[ls_num][k] << endl;
+			// }
 
 
-			if (aus_reg.size() == 0)
-			{
-				for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
-				{
-					//*output_file << ", 0";
-					std::cout << " 0";
-				}
-			}
+			// if (aus_reg.size() == 0)
+			// {
+			// 	for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
+			// 	{
+			// 		//*output_file << ", 0";
+			// 		std::cout << " 0";
+			// 	}
+			// }
 
-			std::cout << endl;
+			//std::cout << endl;
 			auto aus_class = face_analyser.GetCurrentAUsClass();
 
 			vector<string> au_class_names = face_analyser.GetAUClassNames();
@@ -1263,28 +1314,28 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 			if(au_buffer2[ls_num][0] == 1){au_buffer0[1]+=1;} else{au_buffer0[1]=0;}
  			// print the result
-			for(int k = 0; k<=6; k++){
+			// for(int k = 0; k<=6; k++){
 
-				if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
-				if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
-				if(k == 2) { cout<<"AU12  "; printf("嘴角上扬\t");}
-				if(k == 3) { cout<<"AU15  "; printf("嘴角下拉\t");}
-				if(k == 4) { cout<<"AU17  "; printf("下巴皱起\t");}
-				if(k == 5) { cout<<"AU23  "; printf("嘴巴收紧\t");}
-				if(k == 6) { cout<<"AU26  "; printf("张大嘴\t");}
+			// 	if(k == 0) { cout<<"AU01  "; printf("扬眉\t");}
+			// 	if(k == 1) { cout<<"AU04  "; printf("皱眉\t");}
+			// 	if(k == 2) { cout<<"AU12  "; printf("嘴角上扬\t");}
+			// 	if(k == 3) { cout<<"AU15  "; printf("嘴角下拉\t");}
+			// 	if(k == 4) { cout<<"AU17  "; printf("下巴皱起\t");}
+			// 	if(k == 5) { cout<<"AU23  "; printf("嘴巴收紧\t");}
+			// 	if(k == 6) { cout<<"AU26  "; printf("张大嘴\t");}
 
-				std::cout<<"  "<< au_buffer2[ls_num][k] << endl;
-			}
+			// 	std::cout<<"  "<< au_buffer2[ls_num][k] << endl;
+			// }
 
-			if (aus_class.size() == 0)
-			{
-				for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
-				{
-					//*output_file << ", 0";
-					std::cout << ", 0";
-				}
-			}
-			std::cout << endl<<endl;
+			// if (aus_class.size() == 0)
+			// {
+			// 	for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
+			// 	{
+			// 		//*output_file << ", 0";
+			// 		std::cout << ", 0";
+			// 	}
+			// }
+			// std::cout << endl<<endl;
 
 			au_buffer1[3][ls_num] = 1;
 			au_buffer2[3][ls_num] = 1;
@@ -1304,11 +1355,12 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		    char send[100];
 		    char sendline[100];
 		    //int ls = 0;
+
 			for(int i = 1;i<=7;i++){
 				sendline[i] = '0';
 				if(au_buffer[i] == 3 && au_buffer0[i] >= 3){
 					sendline[i] = '1';
-					cout<<"识别出表情："<<i<<endl;
+					// cout<<"识别出表情："<<i<<endl;
 				}
 				// if(au_buffer1[0][i] > 3.0 && au_buffer1[1][i] > 3.0 && au_buffer1[2][i] > 3.0){
 				// 	if(au_buffer2[0][i] == 1 && au_buffer2[1][i] == 1 && au_buffer2[2][i] == 1){
@@ -1325,7 +1377,13 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			if(shaking == true) sendline[9] = '1';
 			if(shaking == false) sendline[9] = '0';
 
-			for(int i = 0;i<=6;i++){
+			if(au_result[0]>3.5){
+				send[1] = '1';
+			}
+			else{
+				send[1] = '0';
+			}
+			for(int i = 1;i<=6;i++){
 				if(au_result[i] >= 3) {
 					send[i+1] = '1';
 				}
@@ -1371,9 +1429,71 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 		    close(sockfd);
 
-		    cout << pose_estimate[3] << "  " << pose_estimate[4] << "  " << pose_estimate[5] << endl;
-		    cout << "点头：" << (nodding ? "是" : "否") << endl;
-		    cout << "摇头：" << (shaking ? "是" : "否") << endl;
+		    FILE* fp = fopen("/Users/steven/Desktop/Lookine/lookine/results.txt", "r");  //注意这里的斜杠方向和换行字符斜杠方向是相反的  
+		    char a[256];  
+		    while(!feof(fp))    
+		    {  
+		        fgets(a,sizeof(a),fp);   
+		        // if(feof(fp))      
+		        //     printf("%s",a);  
+		    }  
+		    fclose(fp);
+
+		    float neutral = 0.0;
+		    float happiness= 0.0;
+		    float sadness = 0;
+		    float surprise = 0;
+		    float disgust= 0;
+		    float anger = 0;
+		    float fear = 0;
+
+		    sscanf(a,"[%f, %f, %f, %f, %f, %f, %f]",&neutral,&happiness,&sadness,&surprise,&fear,&disgust,&anger);
+		    // cout<<neutral<<" "<<happiness<<" "<<sadness<<" "<<surprise<<" "<<fear<<" "<<disgust<<" "<<anger<<endl;
+		    expressions_result[0] = neutral;
+		    expressions_result[1] = happiness;
+		    expressions_result[2] = sadness;
+		    expressions_result[3] = surprise;
+		    expressions_result[4] = fear;
+		    expressions_result[5] = disgust;
+		    expressions_result[6] = anger;
+
+		    if(happiness > 75) {expN[0] += 1;} else{expN[0] = 0;}
+		    if(expN[0] == 3){all_results[9] = 1;} else{all_results[9] = 0;}
+		    if(sadness > 75) {expN[1] += 1;} else{expN[1] = 0;}
+		    if(expN[1] == 3){all_results[10] = 1;} else{all_results[10] = 0;}
+		    if(surprise > 75) {expN[2] += 1;} else{expN[2] = 0;}
+		    if(expN[2] == 3){all_results[11] = 1;} else{all_results[11] = 0;}
+		    if(fear > 75) {expN[3] += 1;} else{expN[3] = 0;}
+		    if(expN[3] == 3){all_results[12] = 1;} else{all_results[12] = 0;}
+		    if(disgust > 50) {expN[4] += 1;} else{expN[4] = 0;}
+		    if(expN[4] == 3){all_results[13] = 1;} else{all_results[13] = 0;}
+		    if(anger > 50) {expN[5] += 1;} else{expN[5] = 0;}
+		    if(expN[5] == 3){all_results[14] = 1;} else{all_results[14] = 0;}
+
+		    // int sockfd2;
+		    // struct sockaddr_in servaddr2;
+
+		    // sockfd2 = socket(PF_INET, SOCK_DGRAM, 0);
+
+		    // bzero(&servaddr2, sizeof(servaddr2));
+		    // servaddr2.sin_family = AF_INET;
+		    // servaddr2.sin_addr.s_addr = inet_addr("127.0.0.1");
+		    // servaddr2.sin_port = htons(23334);
+
+		    // bind(sockfd2, (struct sockaddr *)&servaddr2, sizeof(servaddr2));
+
+		    // int n;
+		    // char recvline[1024];
+
+		    // recvfrom(sockfd2, recvline, 1024, 0, NULL, NULL);
+
+		    // printf("%s\n", recvline);
+
+		    // close(sockfd2);
+
+		    // cout << pose_estimate[3] << "  " << pose_estimate[4] << "  " << pose_estimate[5] << endl;
+		    // cout << "点头：" << (nodding ? "是" : "否") << endl;
+		    // cout << "摇头：" << (shaking ? "是" : "否") << endl;
 
 		  
 			//test
@@ -1653,8 +1773,8 @@ bool estimateNodding(const deque<PEloc> history_pose_estimate) {
 		b+= (a>0)?1:-1;
 	}
 
-	system("clear");
-	cout << a << "   " << b << "   " << c << "   " << drx << endl;
+	// system("clear");
+	// cout << a << "   " << b << "   " << c << "   " << drx << endl;
 	if (abs(b)>=3 || b == -2)
 		return true;
 	return false;
@@ -1688,7 +1808,7 @@ bool estimateShaking(const deque<PEloc> history_pose_estimate) {
 		b+= (a>0)?1:-1;
 	}
 
-	cout << a << "   " << b << "   " << c << "   " << drx << endl;
+	// cout << a << "   " << b << "   " << c << "   " << drx << endl;
 	if (abs(b)>=3)
 		return true;
 	return false;
