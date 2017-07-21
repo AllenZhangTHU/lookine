@@ -24,6 +24,7 @@ surpriseT = 0
 fearT = 0
 disgustT = 0
 angerT = 0
+auT = [0,0,0,0,0,0,0,0,0,0]
 
 emotionOn = True
 auOn = True
@@ -156,10 +157,6 @@ t.start()
 
 # pygame.init()
 pygame.mixer.init()
-# pygame.mixer.music.load('./audio/aus/扬眉.mp3')
-# pygame.mixer.music.play()
-# pygame.mixer.music.load('./audio/aus/皱眉.mp3')
-# pygame.mixer.music.play()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
@@ -175,60 +172,209 @@ def listentoCPP():
         try:
             #print type(data)
             #print type(data[0])
+            for i in range(1,10):
+                auT[i] += 1
+                if data[i] == '0':
+                    auT[i] = 0
             if auOn:
                 if autoOn:
-                    if data[1] == '1':
+                    if auT[1] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/扬眉.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/扬眉.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/扬眉2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/扬眉3.mp3')
                         pygame.mixer.music.play()
                         print('扬眉')
-                    if data[2] == '1':
+                    if auT[2] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/皱眉.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/皱眉.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/皱眉2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/皱眉3.mp3')
                         pygame.mixer.music.play()
                         print('皱眉')
-                    if data[3] == '1':
+                    if auT[3] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/嘴角上扬.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/嘴角上扬.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/嘴角上扬2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/嘴角上扬3.mp3')
                         pygame.mixer.music.play()
                         print('嘴角上扬')
-                    if data[4] == '1':
+                    if auT[4] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/嘴角下拉.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/嘴角下拉.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/嘴角下拉2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/嘴角下拉3.mp3')
                         pygame.mixer.music.play()
                         print('嘴角下拉')
-                    if data[5] == '1':
+                    if auT[5] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/下巴皱起.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/下巴皱起.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/下巴皱起2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/下巴皱起3.mp3')
                         pygame.mixer.music.play()
                         print('下巴皱起')
-                    if data[6] == '1':
+                    if auT[6] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/嘴巴收紧.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/嘴巴收紧.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/嘴巴收紧2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/嘴巴收紧3.mp3')
                         pygame.mixer.music.play()
                         print('嘴巴收紧')
-                    if data[7] == '1':
+                    if auT[7] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/张大嘴.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/张大嘴.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/张大嘴2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/张大嘴3.mp3')
                         pygame.mixer.music.play()
                         print('张大嘴')
-                    if data[8] == '1':
+                    if auT[8] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/点头.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/点头.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/点头2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/点头3.mp3')
                         pygame.mixer.music.play()
                         print('点头')
-                    if data[9] == '1':
+                    if auT[9] == 3:
                         while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                        pygame.mixer.music.load('./audio/aus/摇头.mp3')
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/摇头.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/摇头2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/摇头3.mp3')
+                        pygame.mixer.music.play()
+                        print('摇头')
+                if onceOn:
+                    if auT[1] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/扬眉.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/扬眉2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/扬眉3.mp3')
+                        pygame.mixer.music.play()
+                        print('扬眉')
+                    if auT[2] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/皱眉.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/皱眉2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/皱眉3.mp3')
+                        pygame.mixer.music.play()
+                        print('皱眉')
+                    if auT[3] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/嘴角上扬.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/嘴角上扬2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/嘴角上扬3.mp3')
+                        pygame.mixer.music.play()
+                        print('嘴角上扬')
+                    if auT[4] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/嘴角下拉.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/嘴角下拉2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/嘴角下拉3.mp3')
+                        pygame.mixer.music.play()
+                        print('嘴角下拉')
+                    if auT[5] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/下巴皱起.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/下巴皱起2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/下巴皱起3.mp3')
+                        pygame.mixer.music.play()
+                        print('下巴皱起')
+                    if auT[6] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/嘴巴收紧.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/嘴巴收紧2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/嘴巴收紧3.mp3')
+                        pygame.mixer.music.play()
+                        print('嘴巴收紧')
+                    if auT[7] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/张大嘴.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/张大嘴2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/张大嘴3.mp3')
+                        pygame.mixer.music.play()
+                        print('张大嘴')
+                    if auT[8] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/点头.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/点头2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/点头3.mp3')
+                        pygame.mixer.music.play()
+                        print('点头')
+                    if auT[9] > 0:
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        if speed == 1:
+                            pygame.mixer.music.load('./audio/aus/摇头.mp3')
+                        if speed == 2:
+                            pygame.mixer.music.load('./audio/aus/摇头2.mp3')
+                        if speed == 3:
+                            pygame.mixer.music.load('./audio/aus/摇头3.mp3')
                         pygame.mixer.music.play()
                         print('摇头')
         except Exception as e:
@@ -338,7 +484,12 @@ while True:
                 if (happinessT == 3):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/happiness2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/happiness3.mp3')
                     pygame.mixer.music.play()
 
                 if (sadness >75):
@@ -348,7 +499,12 @@ while True:
                 if (sadnessT == 3):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/sadness2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/sadness3.mp3')
                     pygame.mixer.music.play()
 
                 if (surprise >75):
@@ -358,7 +514,12 @@ while True:
                 if (surpriseT == 3):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/surprise2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/surprise3.mp3')
                     pygame.mixer.music.play()
 
                 if (fear >75):
@@ -368,7 +529,12 @@ while True:
                 if (fearT == 3):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/fear.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/fear.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/fear2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/fear3.mp3')
                     pygame.mixer.music.play()
 
                 if (disgust >50):
@@ -378,7 +544,12 @@ while True:
                 if (disgustT == 3):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/disgust2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/disgust3.mp3')
                     pygame.mixer.music.play()
 
                 if (anger >50):
@@ -388,39 +559,74 @@ while True:
                 if (angerT == 3):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/anger.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/anger.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/anger2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/anger3.mp3')
                     pygame.mixer.music.play()
             if onceOn:
                 onceOn = False
                 if (happiness >75):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/happiness2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/happiness3.mp3')
                     pygame.mixer.music.play()
                 if (sadness >75):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/sadness2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/sadness3.mp3')
                     pygame.mixer.music.play()
                 if (surprise >75):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/surprise2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/surprise3.mp3')
                     pygame.mixer.music.play()
                 if (fear >75):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/fear.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/fear.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/fear2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/fear3.mp3')
                     pygame.mixer.music.play()
                 if (disgust >50):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/disgust2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/disgust3.mp3')
                     pygame.mixer.music.play()
                 if (anger >50):
                     while pygame.mixer.music.get_busy():
                             time.sleep(1)
-                    pygame.mixer.music.load('./audio/expressions/anger.mp3')
+                    if speed == 1:
+                        pygame.mixer.music.load('./audio/expressions/anger.mp3')
+                    if speed == 2:
+                        pygame.mixer.music.load('./audio/expressions/anger2.mp3')
+                    if speed == 3:
+                        pygame.mixer.music.load('./audio/expressions/anger3.mp3')
                     pygame.mixer.music.play()
 
 
