@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+     <!-- 引入jQuery -->
+    <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+
+     <!-- 引入 Bootstrap -->
+     <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+     <link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+     <!-- <link href="{% static '/css/cover.css' %}" rel="stylesheet" type="text/css"> -->
+     <script type="text/javascript" src="static/bootstrap/js/bootstrap.min.js"></script>
+     <script type="text/javascript" src="static/bootstrap/js/bootstrap.js"></script>  
+
+    <script type="text/javascript" src="static/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="static/js/jquery-3.2.1.min.js"></script>        
+     <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    <title>Lookine</title>       
+</head>
+
+<body>
+
+  <header role="banner">
+      <nav role="navigation" class="navbar navbar-default" >
+        <div class="container" style="color:#fff">
+        <center><font size="16" color="white">Lookine遥控器</font></center>
+        </div><!--/.container -->
+      </nav>
+  </header>
+
+  <div class="row">
+    <div class="col-xs-1">
+    </div>
+    <div class="col-xs-11">
+      <h2>偏好设置</h2> 
+    </div>
+  </div>
+
+<!--   <table><tr><td style="width:100%;height:16px;font-size:14px;border:0"></td></tr></table> -->
+
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h2>情绪反馈类型</h2>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-4">
+            	<div role="button" aria-label="情绪已选择" id="1-1">
+	              <center><img src="pic/1-1-2.png" class="img-rounded" id="1-1-img"></center>
+	              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪</h0></button></center> -->
+	              <center><h1>情绪</h1></center>
+            	</div>
+            </div>
+            <div class="col-xs-4" >
+            	<div role="button" aria-label="微表情未选择" id="1-2">
+	              <center><img src="pic/1-2-1.png" class="img-rounded" id="1-2-img"></center>
+	              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪</h0></button></center> -->
+	              <center><h1>微表情</h1></center>
+            	</div>
+             <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>微表情</h0></button></center> -->
+            </div>
+            <div class="col-xs-4" > 
+            <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪与微表情</h0></button></center> -->
+            	<div role="button" aria-label="情绪与微表情未选择" id="1-3">
+	              <center><img src="pic/1-3-1.png" class="img-rounded" id="1-3-img"></center>
+	              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪</h0></button></center> -->
+	              <center><h1>情绪与微表情</h1></center>
+            	</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h2>播放速度</h2>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-4"> 
+            	<div role="button" aria-label="正常速度已选择" id="2-1">
+	              <center><img src="pic/2-1-2.png" class="img-rounded" id="2-1-img"></center>
+	              <center><h1>正常速度</h1></center>
+            	</div>
+            </div>
+            <div class="col-xs-4" > 
+            	<div role="button" aria-label="1.5倍速度未选择" id="2-2">
+	              <center><img src="pic/2-2-1.png" class="img-rounded" id="2-2-img"></center>
+	              <center><h1>1.5倍速度</h1></center>
+            	</div>
+            </div>
+            <div class="col-xs-4"> 
+            	<div role="button" aria-label="2倍速度未选择" id="2-3">
+	              <center><img src="pic/2-3-1.png" class="img-rounded" id="2-3-img"></center>
+	              <center><h1>2倍速度</h1></center>
+            	</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h2>识别方式</h2>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-6">
+            <!-- <img src="{% static 'pic/1.png' %}" class="img-rounded">-->
+            <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>自动识别</h0></button></center> -->
+             <div role="button" aria-label="自动识别已选择" id="3-1">
+	             <center><img src="pic/3-1-2.png" class="img-rounded" id="3-1-img"></center>
+	             <center><h1>自动识别</h1></center>
+             </div>
+            </div>
+            <div class="col-xs-6"> 
+             <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>单次识别</h0></button></center> -->
+             <div role="button" aria-label="单词识别未选择" id="3-2">
+		         <center><img src="pic/3-2-1.png" class="img-rounded" id="3-2-img"></center>
+		         <center><h1>单次识别</h1></center>
+             </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-xs-1">
+    </div>
+    <div class="col-xs-11">
+      <h2>识别按钮</h2> 
+    </div>
+  </div>
+
+<!--   <table><tr><td style="width:100%;height:16px;font-size:14px;border:0"></td></tr></table> -->
+  <div class="row">
+    <div class="col-xs-1">
+    </div>
+    <div class="col-xs-10">
+      <div class="panel panel-default">
+      <div class="panel-body">
+	      <div role="button" aria-label="识别" id="4">
+	      	<center><img src="pic/4-1.png" class="img-rounded" id="4-img"></center>
+	      </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+<!--     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script> -->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+</body>
+<script type="text/javascript">//<![CDATA[
+	$("#1-1").click(function () {
+		//console.log('here1');  //输出
+		if($("#1-1-img").attr('src') == 'pic/1-1-1.png'){
+      $.post("/settype",JSON.stringify({detail:"emotion"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#1-1-img").attr('src','pic/1-1-2.png');
+          $("#1-1").attr('aria-label','情绪已选择');
+          $("#1-2-img").attr('src','pic/1-2-1.png');
+          $("#1-2").attr('aria-label','微表情未选择');
+          $("#1-3-img").attr('src','pic/1-3-1.png');
+          $("#1-3").attr('aria-label','情绪与微表情未选择');
+        }
+      })
+		}
+    
+  	});
+  	$("#1-2").click(function () {
+		//console.log('here1');  //输出
+		if($("#1-2-img").attr('src') == 'pic/1-2-1.png'){
+			$.post("/settype",JSON.stringify({detail:"au"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#1-2-img").attr('src','pic/1-2-2.png');
+          $("#1-2").attr('aria-label','微表情已选择');
+          $("#1-1-img").attr('src','pic/1-1-1.png');
+          $("#1-1").attr('aria-label','情绪未选择');
+          $("#1-3-img").attr('src','pic/1-3-1.png');
+          $("#1-3").attr('aria-label','情绪与微表情未选择');
+        }
+      })	
+		}
+  	});
+  	$("#1-3").click(function () {
+		  if($("#1-3-img").attr('src') == 'pic/1-3-1.png'){
+  			$.post("/settype",JSON.stringify({detail:"both"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#1-3-img").attr('src','pic/1-3-2.png');
+          $("#1-3").attr('aria-label','情绪与微表情已选择');
+          $("#1-1-img").attr('src','pic/1-1-1.png');
+          $("#1-1").attr('aria-label','情绪未选择');
+          $("#1-2-img").attr('src','pic/1-2-1.png');
+          $("#1-2").attr('aria-label','微表情未选择');
+        }
+      })
+  			
+  		}
+  	});
+
+  	$("#2-1").click(function () {
+		//console.log('here1');  //输出
+		if($("#2-1-img").attr('src') == 'pic/2-1-1.png'){
+      $.post("/setspeed",JSON.stringify({detail:"normal"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#2-1-img").attr('src','pic/2-1-2.png');
+          $("#2-1").attr('aria-label','正常速度已选择');
+          $("#2-2-img").attr('src','pic/2-2-1.png');
+          $("#2-2").attr('aria-label','1.5倍速度未选择');
+          $("#2-3-img").attr('src','pic/2-3-1.png');
+          $("#2-3").attr('aria-label','2倍速度未选择');
+        }
+      })
+			
+		}
+  	});
+  	$("#2-2").click(function () {
+		//console.log('here1');  //输出
+		if($("#2-2-img").attr('src') == 'pic/2-2-1.png'){
+			$.post("/setspeed",JSON.stringify({detail:"1.5times"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#2-2-img").attr('src','pic/2-2-2.png');
+          $("#2-2").attr('aria-label','1.5倍速度已选择');
+          $("#2-1-img").attr('src','pic/2-1-1.png');
+          $("#2-1").attr('aria-label','正常速度未选择');
+          $("#2-3-img").attr('src','pic/2-3-1.png');
+          $("#2-3").attr('aria-label','2倍速度未选择');
+        }
+      })
+			
+		}
+  	});
+  	$("#2-3").click(function () {
+		//console.log('here1');  //输出
+		if($("#2-3-img").attr('src') == 'pic/2-3-1.png'){
+			$.post("/setspeed",JSON.stringify({detail:"2times"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#2-3-img").attr('src','pic/1-3-2.png');
+          $("#2-3").attr('aria-label','2倍速度已选择');
+          $("#2-1-img").attr('src','pic/2-1-1.png');
+          $("#2-1").attr('aria-label','正常速度未选择');
+          $("#2-2-img").attr('src','pic/2-2-1.png');
+          $("#2-2").attr('aria-label','1.5倍速度未选择');
+        }
+      })
+		}
+  	});
+
+    $("#3-1").click(function () {
+    //console.log('here1');  //输出
+    if($("#3-1-img").attr('src') == 'pic/3-1-1.png'){
+      $.post("/setmode",JSON.stringify({detail:"auto"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#3-1-img").attr('src','pic/3-1-2.png');
+          $("#3-1").attr('aria-label','自动识别已选择');
+          $("#3-2-img").attr('src','pic/3-2-1.png');
+          $("#3-2").attr('aria-label','单次识别未选择');
+        }
+      })
+    }
+    });
+
+    $("#3-2").click(function () {
+    //console.log('here1');  //输出
+    if($("#3-2-img").attr('src') == 'pic/3-2-1.png'){
+      $.post("/setmode",JSON.stringify({detail:"once"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#3-2-img").attr('src','pic/3-2-2.png');
+          $("#3-2").attr('aria-label','单次识别已选择');
+          $("#3-1-img").attr('src','pic/3-1-1.png');
+          $("#3-1").attr('aria-label','自动识别未选择');
+          $("#4-img").attr('src','pic/4-1.png');
+        }
+      })
+    }
+    });
+
+    $("#4").click(function () {
+    //console.log('here1');  //输出
+    if($("#4-img").attr('src') == 'pic/4-1.png' && $("#3-1-img").attr('src') == 'pic/3-1-2.png'){
+      $.post("/do",JSON.stringify({detail:"startauto"}),function (data) {
+        if(data['result'] == "ok"){
+          $("#4-img").attr('src','pic/4-2.png');
+        }
+      })
+    }
+    else{
+      if($("#4-img").attr('src') == 'pic/4-2.png' && $("#3-1-img").attr('src') == 'pic/3-1-2.png'){
+        $.post("/do",JSON.stringify({detail:"stopauto"}),function (data) {
+          if(data['result'] == "ok"){
+            $("#4-img").attr('src','pic/4-1.png');
+          }
+        })
+      }
+    }
+    if($("#4-img").attr('src') == 'pic/4-1.png' && $("#3-2-img").attr('src') == 'pic/3-2-2.png'){
+      $.post("/do",JSON.stringify({detail:"doonce"}),function (data) {})
+    }
+    });
+
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
