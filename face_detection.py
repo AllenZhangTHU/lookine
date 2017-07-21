@@ -11,7 +11,9 @@ import time, threading
 import base64
 import requests
 import matplotlib.pyplot as plt
-
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from os import curdir, sep
+import json
 import socket
 import pygame
 import serial
@@ -22,6 +24,135 @@ surpriseT = 0
 fearT = 0
 disgustT = 0
 angerT = 0
+
+emotionOn = True
+auOn = True
+speed = 1
+autoOn = True
+onceOn = False
+PORT_NUMBER = 8006
+
+
+
+#This class will handles any incoming request from
+#the browser 
+class myHandler(BaseHTTPRequestHandler):
+    
+    #Handler for the GET requests
+    def do_GET(self):
+        global emotionOn
+        global auOn
+        global autoOn
+        global onceOn
+        global speed
+        if self.path=="/":
+            print "refresh"
+            self.path="/index.html"
+            emotionOn = True
+            auOn = False
+            autoOn = False
+            onceOn = False
+            speed = 1
+        try:
+            #Check the file extension required and
+            #set the right mime type
+
+            sendReply = False
+            if self.path.endswith(".html"):
+                mimetype='text/html'
+                sendReply = True
+            if self.path.endswith(".jpg"):
+                mimetype='image/jpg'
+                sendReply = True
+            if self.path.endswith(".png"):
+                mimetype='image/png'
+                sendReply = True
+            if self.path.endswith(".gif"):
+                mimetype='image/gif'
+                sendReply = True
+            if self.path.endswith(".js"):
+                mimetype='application/javascript'
+                sendReply = True
+            if self.path.endswith(".css"):
+                mimetype='text/css'
+                sendReply = True
+            if self.path.endswith(".css"):
+                mimetype='text/css'
+                sendReply = True
+            if self.path.endswith(".map"):
+                mimetype='text/css'
+                sendReply = True
+
+            if sendReply == True:
+                #Open the static file requested and send it
+                f = open(curdir + sep + self.path) 
+                self.send_response(200)
+                self.send_header('Content-type',mimetype)
+                self.end_headers()
+                self.wfile.write(f.read())
+                f.close()
+            return
+        except IOError:
+            self.send_error(404,'File Not Found: %s' % self.path)
+    def do_POST(self):
+        global emotionOn
+        global auOn
+        global autoOn
+        global onceOn
+        global speed
+        print self.path
+        length = int(self.headers['content-length'])
+        request_str = self.rfile.read(length)
+        reqDict = json.loads(request_str)
+        # print reqDict
+        reqCmd = reqDict['detail']
+        print reqCmd
+        if reqCmd == "emotion":
+            emotionOn = True
+            auOn = False
+        if reqCmd =="au":
+            emotionOn = False
+            auOn = True
+        if reqCmd == "both":
+            emotionOn = True
+            auOn = True
+        if reqCmd == "normal":
+            speed = 1
+        if reqCmd == "1.5times":
+            speed = 2
+        if reqCmd == "2times":
+            speed = 3
+        if reqCmd == "once":
+            autoOn = False
+        if reqCmd == "stopauto":
+            autoOn = False
+        if reqCmd == "startauto":
+            autoOn = True
+        if reqCmd == "doonce":
+            onceOn = True
+        resDict = {"result":"ok"}
+        resJson = json.dumps(resDict)
+
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(resJson)
+def runserver(portNum):
+    try:
+        #Create a web server and define the handler to manage the
+        #incoming request
+        server = HTTPServer(('', portNum), myHandler)
+        print 'Started httpserver on port ' , PORT_NUMBER
+        #Wait forever for incoming htto requests
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print '^C received, shutting down the web server'
+        server.socket.close()
+
+
+t = threading.Thread(target=runserver, args=(PORT_NUMBER,))
+t.start()
+
 
 # pygame.init()
 pygame.mixer.init()
@@ -44,60 +175,62 @@ def listentoCPP():
         try:
             #print type(data)
             #print type(data[0])
-            if data[1] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/扬眉.mp3')
-                pygame.mixer.music.play()
-                print('扬眉')
-            if data[2] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/皱眉.mp3')
-                pygame.mixer.music.play()
-                print('皱眉')
-            if data[3] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/嘴角上扬.mp3')
-                pygame.mixer.music.play()
-                print('嘴角上扬')
-            if data[4] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/嘴角下拉.mp3')
-                pygame.mixer.music.play()
-                print('嘴角下拉')
-            if data[5] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/下巴皱起.mp3')
-                pygame.mixer.music.play()
-                print('下巴皱起')
-            if data[6] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/嘴巴收紧.mp3')
-                pygame.mixer.music.play()
-                print('嘴巴收紧')
-            if data[7] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/张大嘴.mp3')
-                pygame.mixer.music.play()
-                print('张大嘴')
-            if data[8] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/点头.mp3')
-                pygame.mixer.music.play()
-                print('点头')
-            if data[9] == '1':
-                while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-                pygame.mixer.music.load('./audio/aus/摇头.mp3')
-                pygame.mixer.music.play()
-                print('摇头')
+            if auOn:
+                if autoOn:
+                    if data[1] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/扬眉.mp3')
+                        pygame.mixer.music.play()
+                        print('扬眉')
+                    if data[2] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/皱眉.mp3')
+                        pygame.mixer.music.play()
+                        print('皱眉')
+                    if data[3] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/嘴角上扬.mp3')
+                        pygame.mixer.music.play()
+                        print('嘴角上扬')
+                    if data[4] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/嘴角下拉.mp3')
+                        pygame.mixer.music.play()
+                        print('嘴角下拉')
+                    if data[5] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/下巴皱起.mp3')
+                        pygame.mixer.music.play()
+                        print('下巴皱起')
+                    if data[6] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/嘴巴收紧.mp3')
+                        pygame.mixer.music.play()
+                        print('嘴巴收紧')
+                    if data[7] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/张大嘴.mp3')
+                        pygame.mixer.music.play()
+                        print('张大嘴')
+                    if data[8] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/点头.mp3')
+                        pygame.mixer.music.play()
+                        print('点头')
+                    if data[9] == '1':
+                        while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                        pygame.mixer.music.load('./audio/aus/摇头.mp3')
+                        pygame.mixer.music.play()
+                        print('摇头')
         except Exception as e:
         # print("[Errno {0}] {1}".format(e.errno, e.strerror))
             pass
@@ -140,7 +273,7 @@ device = '/dev/tty.wchusbserial1460'
 MAX_TIME_SLICE = 10
 time_slice = 0
 
-ser = serial.Serial('/dev/tty.wchusbserial1460', 9600)
+# ser = serial.Serial('/dev/tty.wchusbserial1460', 9600)
 
 while True:
     count+=1
@@ -189,81 +322,114 @@ while True:
     cv2.putText(img, str(control) , (10, 500), font, 3, (0, 0, 255), 4,False)
     cv2.imshow("lookine", img)
     try:
-        emotionDict = emotion["faces"][0]["attributes"]["emotion"]
-        # print(len(emotion["faces"]))
-        # print(emotionDict)
-        happiness = emotionDict['happiness']
-        if (happiness >75):
-            happinessT += 1
-        else:
-            happinessT = 0
-        if (happinessT == 3):
-            while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-            pygame.mixer.music.load('./audio/expressions/happiness.mp3')
-            pygame.mixer.music.play()
+        if emotionOn:
+            emotionDict = emotion["faces"][0]["attributes"]["emotion"]
+            happiness = emotionDict['happiness']
+            sadness = emotionDict['sadness']
+            surprise = emotionDict['surprise']
+            fear = emotionDict['fear']
+            disgust = emotionDict['disgust']
+            anger = emotionDict['anger']
+            if autoOn:
+                if (happiness >75):
+                    happinessT += 1
+                else:
+                    happinessT = 0
+                if (happinessT == 3):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+                    pygame.mixer.music.play()
 
-        sadness = emotionDict['sadness']
-        if (sadness >75):
-            sadnessT += 1
-        else:
-            sadnessT = 0
-        if (sadnessT == 3):
-            while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-            pygame.mixer.music.load('./audio/expressions/sadness.mp3')
-            pygame.mixer.music.play()
+                if (sadness >75):
+                    sadnessT += 1
+                else:
+                    sadnessT = 0
+                if (sadnessT == 3):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+                    pygame.mixer.music.play()
 
-        surprise = emotionDict['surprise']
-        if (surprise >75):
-            surpriseT += 1
-        else:
-            surpriseT = 0
-        if (surpriseT == 3):
-            while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-            pygame.mixer.music.load('./audio/expressions/surprise.mp3')
-            pygame.mixer.music.play()
+                if (surprise >75):
+                    surpriseT += 1
+                else:
+                    surpriseT = 0
+                if (surpriseT == 3):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+                    pygame.mixer.music.play()
 
-        fear = emotionDict['fear']
-        if (fear >75):
-            fearT += 1
-        else:
-            fearT = 0
-        if (fearT == 3):
-            while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-            pygame.mixer.music.load('./audio/expressions/fear.mp3')
-            pygame.mixer.music.play()
+                if (fear >75):
+                    fearT += 1
+                else:
+                    fearT = 0
+                if (fearT == 3):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/fear.mp3')
+                    pygame.mixer.music.play()
 
-        disgust = emotionDict['disgust']
-        if (disgust >50):
-            disgustT += 1
-        else:
-            disgustT = 0
-        if (disgustT == 3):
-            while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-            pygame.mixer.music.load('./audio/expressions/disgust.mp3')
-            pygame.mixer.music.play()
+                if (disgust >50):
+                    disgustT += 1
+                else:
+                    disgustT = 0
+                if (disgustT == 3):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+                    pygame.mixer.music.play()
 
-        anger = emotionDict['anger']
-        if (anger >50):
-            angerT += 1
-        else:
-            angerT = 0
-        if (angerT == 3):
-            while pygame.mixer.music.get_busy():
-                    time.sleep(1)
-            pygame.mixer.music.load('./audio/expressions/anger.mp3')
-            pygame.mixer.music.play()
+                if (anger >50):
+                    angerT += 1
+                else:
+                    angerT = 0
+                if (angerT == 3):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/anger.mp3')
+                    pygame.mixer.music.play()
+            if onceOn:
+                onceOn = False
+                if (happiness >75):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/happiness.mp3')
+                    pygame.mixer.music.play()
+                if (sadness >75):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/sadness.mp3')
+                    pygame.mixer.music.play()
+                if (surprise >75):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/surprise.mp3')
+                    pygame.mixer.music.play()
+                if (fear >75):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/fear.mp3')
+                    pygame.mixer.music.play()
+                if (disgust >50):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/disgust.mp3')
+                    pygame.mixer.music.play()
+                if (anger >50):
+                    while pygame.mixer.music.get_busy():
+                            time.sleep(1)
+                    pygame.mixer.music.load('./audio/expressions/anger.mp3')
+                    pygame.mixer.music.play()
 
-        data = emotionDict.values()
-        labels = emotionDict.keys()
-        plt.cla()
-        plt.ylim((0,100))
-        plt.bar(range(len(data)), data, tick_label=labels)
-        plt.draw()
+
+            data = emotionDict.values()
+            labels = emotionDict.keys()
+            plt.cla()
+            plt.ylim((0,100))
+            plt.bar(range(len(data)), data, tick_label=labels)
+            plt.draw()
     except Exception as e:
         # print("[Errno {0}] {1}".format(e.errno, e.strerror))
         pass

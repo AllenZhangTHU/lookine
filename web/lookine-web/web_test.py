@@ -2,8 +2,10 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
 import time, threading
+import json
+PORT_NUMBER = 8004
 
-PORT_NUMBER = 8081
+
 
 #This class will handles any incoming request from
 #the browser 
@@ -26,7 +28,7 @@ class myHandler(BaseHTTPRequestHandler):
 				mimetype='image/jpg'
 				sendReply = True
 			if self.path.endswith(".png"):
-				mimetype='text/css'
+				mimetype='image/png'
 				sendReply = True
 			if self.path.endswith(".gif"):
 				mimetype='image/gif'
@@ -53,10 +55,23 @@ class myHandler(BaseHTTPRequestHandler):
 				self.wfile.write(f.read())
 				f.close()
 			return
-
-
 		except IOError:
 			self.send_error(404,'File Not Found: %s' % self.path)
+	def do_POST(self):
+		print self.path
+		length = int(self.headers['content-length'])
+		request_str = self.rfile.read(length)
+		reqDict = json.loads(request_str)
+		print type(reqDict)
+		print reqDict
+
+		resDict = {"result":"ok"}
+		resJson = json.dumps(resDict)
+
+		self.send_response(200)
+		self.send_header('Content-type', 'application/json')
+		self.end_headers()
+		self.wfile.write(resJson)
 def runserver(portNum):
 	try:
 		#Create a web server and define the handler to manage the

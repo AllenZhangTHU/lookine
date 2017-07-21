@@ -168,38 +168,38 @@ const int WINDOW_SIZE = 10;
 void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& face_model, const LandmarkDetector::FaceModelParameters& det_parameters, cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, int frame_count, double fx, double fy, double cx, double cy)
 {
 
-	// Drawing the facial landmarks on the face and the bounding box around it if tracking is successful and initialised
-	double detection_certainty = face_model.detection_certainty;
-	bool detection_success = face_model.detection_success;
+	// // Drawing the facial landmarks on the face and the bounding box around it if tracking is successful and initialised
+	// double detection_certainty = face_model.detection_certainty;
+	// bool detection_success = face_model.detection_success;
 
-	double visualisation_boundary = 0.2;
+	// double visualisation_boundary = 0.2;
 
-	// Only draw if the reliability is reasonable, the value is slightly ad-hoc
-	if (detection_certainty < visualisation_boundary)
-	{
-		LandmarkDetector::Draw(captured_image, face_model);
+	// // Only draw if the reliability is reasonable, the value is slightly ad-hoc
+	// if (detection_certainty < visualisation_boundary)
+	// {
+	// 	LandmarkDetector::Draw(captured_image, face_model);
 
-		double vis_certainty = detection_certainty;
-		if (vis_certainty > 1)
-			vis_certainty = 1;
-		if (vis_certainty < -1)
-			vis_certainty = -1;
+	// 	double vis_certainty = detection_certainty;
+	// 	if (vis_certainty > 1)
+	// 		vis_certainty = 1;
+	// 	if (vis_certainty < -1)
+	// 		vis_certainty = -1;
 
-		vis_certainty = (vis_certainty + 1) / (visualisation_boundary + 1);
+	// 	vis_certainty = (vis_certainty + 1) / (visualisation_boundary + 1);
 
-		// A rough heuristic for box around the face width
-		int thickness = (int)std::ceil(2.0* ((double)captured_image.cols) / 640.0);
+	// 	// A rough heuristic for box around the face width
+	// 	int thickness = (int)std::ceil(2.0* ((double)captured_image.cols) / 640.0);
 
-		cv::Vec6d pose_estimate_to_draw = LandmarkDetector::GetCorrectedPoseWorld(face_model, fx, fy, cx, cy);
+	// 	cv::Vec6d pose_estimate_to_draw = LandmarkDetector::GetCorrectedPoseWorld(face_model, fx, fy, cx, cy);
 
-		// Draw it in reddish if uncertain, blueish if certain
-		LandmarkDetector::DrawBox(captured_image, pose_estimate_to_draw, cv::Scalar((1 - vis_certainty)*255.0, 0, vis_certainty * 255), thickness, fx, fy, cx, cy);
+	// 	// Draw it in reddish if uncertain, blueish if certain
+	// 	LandmarkDetector::DrawBox(captured_image, pose_estimate_to_draw, cv::Scalar((1 - vis_certainty)*255.0, 0, vis_certainty * 255), thickness, fx, fy, cx, cy);
 
-		if (det_parameters.track_gaze && detection_success && face_model.eye_model)
-		{
-			FaceAnalysis::DrawGaze(captured_image, face_model, gazeDirection0, gazeDirection1, fx, fy, cx, cy);
-		}
-	}
+	// 	if (det_parameters.track_gaze && detection_success && face_model.eye_model)
+	// 	{
+	// 		FaceAnalysis::DrawGaze(captured_image, face_model, gazeDirection0, gazeDirection1, fx, fy, cx, cy);
+	// 	}
+	// }
 
 	// Work out the framerate
 	if (frame_count % 10 == 0)
@@ -208,13 +208,14 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 		fps_tracker = 10.0 / (double(t1 - t0) / cv::getTickFrequency());
 		t0 = t1;
 	}
+	cout << fps_tracker << endl;
 
 	// Write out the framerate on the image before displaying it
-	char fpsC[255];
-	std::sprintf(fpsC, "%d", (int)fps_tracker);
-	string fpsSt("FPS:");
-	fpsSt += fpsC;
-	cv::putText(captured_image, fpsSt, cv::Point(10, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+	// char fpsC[255];
+	// std::sprintf(fpsC, "%d", (int)fps_tracker);
+	// string fpsSt("FPS:");
+	// fpsSt += fpsC;
+	// cv::putText(captured_image, fpsSt, cv::Point(10, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
 	if (!det_parameters.quiet_mode)
 	{
@@ -617,7 +618,7 @@ int main (int argc, char **argv)
 
 				if(!det_parameters.quiet_mode)
 				{
-					cv::imshow("sim_warp", sim_warped_img);			
+					//cv::imshow("sim_warp", sim_warped_img);			
 				}
 				if(hog_output_file.is_open())
 				{
@@ -878,151 +879,151 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 	const FaceAnalysis::FaceAnalyser& face_analyser)
 {
 
-	double confidence = 0.5 * (1 - face_model.detection_certainty);
+	// double confidence = 0.5 * (1 - face_model.detection_certainty);
 
-	*output_file << frame_count + 1 << ", " << time_stamp << ", " << confidence << ", " << detection_success;
+	// *output_file << frame_count + 1 << ", " << time_stamp << ", " << confidence << ", " << detection_success;
 
-	// Output the estimated gaze
-	if (output_gaze)
-	{
-		*output_file << ", " << gazeDirection0.x << ", " << gazeDirection0.y << ", " << gazeDirection0.z
-			<< ", " << gazeDirection1.x << ", " << gazeDirection1.y << ", " << gazeDirection1.z;
-	}
+	// // Output the estimated gaze
+	// if (output_gaze)
+	// {
+	// 	*output_file << ", " << gazeDirection0.x << ", " << gazeDirection0.y << ", " << gazeDirection0.z
+	// 		<< ", " << gazeDirection1.x << ", " << gazeDirection1.y << ", " << gazeDirection1.z;
+	// }
 
-	// Output the estimated head pose
-	if (output_pose)
-	{
-		if(face_model.tracking_initialised)
-		{
-			*output_file << ", " << pose_estimate[0] << ", " << pose_estimate[1] << ", " << pose_estimate[2]
-				<< ", " << pose_estimate[3] << ", " << pose_estimate[4] << ", " << pose_estimate[5];
-		}
-		else
-		{
-			*output_file << ", 0, 0, 0, 0, 0, 0";
-		}
-	}
+	// // Output the estimated head pose
+	// if (output_pose)
+	// {
+	// 	if(face_model.tracking_initialised)
+	// 	{
+	// 		*output_file << ", " << pose_estimate[0] << ", " << pose_estimate[1] << ", " << pose_estimate[2]
+	// 			<< ", " << pose_estimate[3] << ", " << pose_estimate[4] << ", " << pose_estimate[5];
+	// 	}
+	// 	else
+	// 	{
+	// 		*output_file << ", 0, 0, 0, 0, 0, 0";
+	// 	}
+	// }
 
-	// Output the detected 2D facial landmarks
-	if (output_2D_landmarks)
-	{
-		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 2; ++i)
-		{
-			if(face_model.tracking_initialised)
-			{
-				*output_file << ", " << face_model.detected_landmarks.at<double>(i);
-			}
-			else
-			{
-				*output_file << ", 0";
-			}
-		}
-	}
+	// // Output the detected 2D facial landmarks
+	// if (output_2D_landmarks)
+	// {
+	// 	for (int i = 0; i < face_model.pdm.NumberOfPoints() * 2; ++i)
+	// 	{
+	// 		if(face_model.tracking_initialised)
+	// 		{
+	// 			*output_file << ", " << face_model.detected_landmarks.at<double>(i);
+	// 		}
+	// 		else
+	// 		{
+	// 			*output_file << ", 0";
+	// 		}
+	// 	}
+	// }
 
-	// Output the detected 3D facial landmarks
-	if (output_3D_landmarks)
-	{
-		cv::Mat_<double> shape_3D = face_model.GetShape(fx, fy, cx, cy);
-		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 3; ++i)
-		{
-			if (face_model.tracking_initialised)
-			{
-				*output_file << ", " << shape_3D.at<double>(i);
-			}
-			else
-			{
-				*output_file << ", 0";
-			}
-		}
-	}
+	// // Output the detected 3D facial landmarks
+	// if (output_3D_landmarks)
+	// {
+	// 	cv::Mat_<double> shape_3D = face_model.GetShape(fx, fy, cx, cy);
+	// 	for (int i = 0; i < face_model.pdm.NumberOfPoints() * 3; ++i)
+	// 	{
+	// 		if (face_model.tracking_initialised)
+	// 		{
+	// 			*output_file << ", " << shape_3D.at<double>(i);
+	// 		}
+	// 		else
+	// 		{
+	// 			*output_file << ", 0";
+	// 		}
+	// 	}
+	// }
 
-	if (output_model_params)
-	{
-		for (int i = 0; i < 6; ++i)
-		{
-			if (face_model.tracking_initialised)
-			{
-				*output_file << ", " << face_model.params_global[i];
-			}
-			else
-			{
-				*output_file << ", 0";
-			}
-		}
-		for (int i = 0; i < face_model.pdm.NumberOfModes(); ++i)
-		{
-			if(face_model.tracking_initialised)
-			{
-				*output_file << ", " << face_model.params_local.at<double>(i, 0);
-			}
-			else
-			{
-				*output_file << ", 0";
-			}
-		}
-	}
+	// if (output_model_params)
+	// {
+	// 	for (int i = 0; i < 6; ++i)
+	// 	{
+	// 		if (face_model.tracking_initialised)
+	// 		{
+	// 			*output_file << ", " << face_model.params_global[i];
+	// 		}
+	// 		else
+	// 		{
+	// 			*output_file << ", 0";
+	// 		}
+	// 	}
+	// 	for (int i = 0; i < face_model.pdm.NumberOfModes(); ++i)
+	// 	{
+	// 		if(face_model.tracking_initialised)
+	// 		{
+	// 			*output_file << ", " << face_model.params_local.at<double>(i, 0);
+	// 		}
+	// 		else
+	// 		{
+	// 			*output_file << ", 0";
+	// 		}
+	// 	}
+	// }
 
 
 
 	if (output_AUs)
 	{
-		auto aus_reg = face_analyser.GetCurrentAUsReg();
+		// auto aus_reg = face_analyser.GetCurrentAUsReg();
 
-		vector<string> au_reg_names = face_analyser.GetAURegNames();
-		std::sort(au_reg_names.begin(), au_reg_names.end());
+		// vector<string> au_reg_names = face_analyser.GetAURegNames();
+		// std::sort(au_reg_names.begin(), au_reg_names.end());
 
-		// write out ar the correct index
-		for (string au_name : au_reg_names)
-		{
-			for (auto au_reg : aus_reg)
-			{
-				if (au_name.compare(au_reg.first) == 0)
-				{
-					*output_file << ", " << au_reg.second;
-					//std::cout <<au_reg.first<<" "<<au_reg.second << "\t";
-					break;
-				}
-			}
-		}
+		// // write out ar the correct index
+		// for (string au_name : au_reg_names)
+		// {
+		// 	for (auto au_reg : aus_reg)
+		// 	{
+		// 		if (au_name.compare(au_reg.first) == 0)
+		// 		{
+		// 			*output_file << ", " << au_reg.second;
+		// 			//std::cout <<au_reg.first<<" "<<au_reg.second << "\t";
+		// 			break;
+		// 		}
+		// 	}
+		// }
 
-		if (aus_reg.size() == 0)
-		{
-			for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
-			{
-				*output_file << ", 0";
-				//std::cout << " 0";
-			}
-		}
+		// if (aus_reg.size() == 0)
+		// {
+		// 	for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
+		// 	{
+		// 		*output_file << ", 0";
+		// 		//std::cout << " 0";
+		// 	}
+		// }
 
-		//std::cout << endl;
-		auto aus_class = face_analyser.GetCurrentAUsClass();
+		// //std::cout << endl;
+		// auto aus_class = face_analyser.GetCurrentAUsClass();
 
-		vector<string> au_class_names = face_analyser.GetAUClassNames();
-		std::sort(au_class_names.begin(), au_class_names.end());
+		// vector<string> au_class_names = face_analyser.GetAUClassNames();
+		// std::sort(au_class_names.begin(), au_class_names.end());
 
-		// write out ar the correct index
-		for (string au_name : au_class_names)
-		{
-			for (auto au_class : aus_class)
-			{
-				if (au_name.compare(au_class.first) == 0)
-				{
-					*output_file << ", " << au_class.second;
-					//std::cout <<au_class.first<<" " <<au_class.second << "  ";
-					break;
-				}
-			}
-		}
+		// // write out ar the correct index
+		// for (string au_name : au_class_names)
+		// {
+		// 	for (auto au_class : aus_class)
+		// 	{
+		// 		if (au_name.compare(au_class.first) == 0)
+		// 		{
+		// 			*output_file << ", " << au_class.second;
+		// 			//std::cout <<au_class.first<<" " <<au_class.second << "  ";
+		// 			break;
+		// 		}
+		// 	}
+		// }
 
-		if (aus_class.size() == 0)
-		{
-			for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
-			{
-				*output_file << ", 0";
-				//std::cout << ", 0";
-			}
-		}
-		//std::cout << endl<<endl;
+		// if (aus_class.size() == 0)
+		// {
+		// 	for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
+		// 	{
+		// 		*output_file << ", 0";
+		// 		//std::cout << ", 0";
+		// 	}
+		// }
+		// //std::cout << endl<<endl;
 
 		count_num++;
 		if(count_num%1 == 0 && count_num > 10)
