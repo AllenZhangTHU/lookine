@@ -99,6 +99,14 @@ static void printErrorAndAbort( const std::string & error )
 printErrorAndAbort( std::string( "Fatal error: " ) + stream )
 
 using namespace std;
+using namespace cv;
+
+static float au_result[7] = {0};
+static float expressions_result[7] = {0};
+static bool head_result[2] = {0};
+static bool all_results[15] = {0};
+static string final_result;
+static int num = 0;
 
 using namespace boost::filesystem;
 
@@ -177,6 +185,7 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 	// Only draw if the reliability is reasonable, the value is slightly ad-hoc
 	if (detection_certainty < visualisation_boundary)
 	{
+		// 画特征点
 		LandmarkDetector::Draw(captured_image, face_model);
 
 		double vis_certainty = detection_certainty;
@@ -193,10 +202,12 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 		cv::Vec6d pose_estimate_to_draw = LandmarkDetector::GetCorrectedPoseWorld(face_model, fx, fy, cx, cy);
 
 		// Draw it in reddish if uncertain, blueish if certain
+		// 画方盒子
 		LandmarkDetector::DrawBox(captured_image, pose_estimate_to_draw, cv::Scalar((1 - vis_certainty)*255.0, 0, vis_certainty * 255), thickness, fx, fy, cx, cy);
 
 		if (det_parameters.track_gaze && detection_success && face_model.eye_model)
 		{
+			//画眼神
 			FaceAnalysis::DrawGaze(captured_image, face_model, gazeDirection0, gazeDirection1, fx, fy, cx, cy);
 		}
 	}
@@ -214,12 +225,108 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 	std::sprintf(fpsC, "%d", (int)fps_tracker);
 	string fpsSt("FPS:");
 	fpsSt += fpsC;
-	cv::putText(captured_image, fpsSt, cv::Point(10, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+	cv::putText(captured_image, fpsSt, cv::Point(172, 40), CV_FONT_HERSHEY_SIMPLEX, 1, CV_RGB(246, 162, 25), 2, CV_AA);
 
 	if (!det_parameters.quiet_mode)
 	{
 		cv::namedWindow("tracking_result", 1);
-		cv::imshow("tracking_result", captured_image);
+		cvResizeWindow("tracking_result", 1240, 722);
+		cv::Mat bg = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/bg.png");
+		cv::Mat imageROI;
+		cv::Mat imageLOGO;
+		cv::Mat matImageResize;
+		cv::resize(captured_image, matImageResize, cv::Size(960,595));
+
+		// cv::Mat logo = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/logo.png");
+		// cv::Mat logo_mask = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/logo.png",0);
+		// imageLOGO = bg(cv::Rect(54,11,logo.cols,logo.rows));
+		// logo.copyTo(imageLOGO,logo_mask);
+
+		// cv::Mat rightbar = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/rightbar.png");
+		// cv::Mat rightbar_mask = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/rightbar.png",0);
+		// cv::Mat imagerightbar = bg(cv::Rect(818,66,rightbar.cols,rightbar.rows));
+		// rightbar.copyTo(imagerightbar,rightbar_mask);
+
+		cv::Mat headyes = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/yes.png");
+		cv::Mat headno = cv::imread("/Users/steven/Desktop/Lookine/lookine/OpenFace-master/imgs/monitor/no.png");
+
+		if(head_result[0] == false){
+			cv::Mat imageshakeheadno = bg(cv::Rect(883,216,headno.cols,headno.rows));
+			headno.copyTo(imageshakeheadno);
+		}
+		else if(head_result[0] == true){
+			cv::Mat imageshakeheadyes = bg(cv::Rect(883,216,headyes.cols,headyes.rows));
+			headyes.copyTo(imageshakeheadyes);
+		}
+
+		if(head_result[1] == false){
+			cv::Mat imagenodheadno = bg(cv::Rect(1101,216,headno.cols,headno.rows));
+			headno.copyTo(imagenodheadno);
+		}
+		else if(head_result[1] == true){
+			cv::Mat imagenodheadyes = bg(cv::Rect(1101,216,headyes.cols,headyes.rows));
+			headyes.copyTo(imagenodheadyes);
+		}
+
+		// rectangle(bg, cvPoint(840, 285), cvPoint(870, 405), CV_RGB(226, 226, 226), -1, 4, 0 ); 
+		for(int i = 0;i <= 6; i++){
+			au_result[i] = (au_result[i]/5.0)*212;
+		}
+		rectangle(bg, cvPoint(992, 285), cvPoint(992+(int)au_result[0], 298), CV_RGB(166, 217, 235), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(992, 309), cvPoint(992+(int)au_result[1], 322), CV_RGB(66,66,66), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(992, 333), cvPoint(992+(int)au_result[2], 346), CV_RGB(49,174,187), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(992, 357), cvPoint(992+(int)au_result[3], 369), CV_RGB(168,121,176), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(992, 380), cvPoint(992+(int)au_result[4], 393), CV_RGB(177,177,177), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(992, 404), cvPoint(992+(int)au_result[5], 417), CV_RGB(246,166,35), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(992, 428), cvPoint(992+(int)au_result[6], 441), CV_RGB(13,156,236), -1, 4, 0 );
+
+		rectangle(bg, cvPoint(936, 495), cvPoint(1062, 508), CV_RGB(166, 217, 235), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 519), cvPoint(1082, 532), CV_RGB(66,66,66), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 543), cvPoint(1082, 556), CV_RGB(49,174,187), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 567), cvPoint(1082, 579), CV_RGB(168,121,176), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 590), cvPoint(1082, 603), CV_RGB(177,177,177), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 614), cvPoint(1082, 627), CV_RGB(246,166,35), -1, 4, 0 ); 
+		rectangle(bg, cvPoint(936, 637), cvPoint(1082, 650), CV_RGB(13,156,236), -1, 4, 0 );  
+
+		// rectangle(bg, cvPoint(895, 285), cvPoint(925, 405), CV_RGB(226, 226, 226), -1, 4, 0 ); 
+
+		bool op = false;
+		for(int i = 0;i<=8;i++){
+			if(all_results[i] == true) {
+				op = true;
+			}
+		}
+		
+		if(op == true)
+		{
+			num = 0;
+			final_result="";
+			if(all_results[7] == true){final_result+="Nod Head  ";}
+			if(all_results[8] == true){final_result+="Shake Head  ";}
+			if(all_results[0] == true){final_result+="Brow Raiser  ";}
+			if(all_results[1] == true){final_result+="Frown  ";}
+			if(all_results[2] == true){final_result+="Smile  ";}
+			if(all_results[3] == true){final_result+="Lip Corner Depressor  ";}
+			if(all_results[4] == true){final_result+="Chin Raiser  ";}
+			if(all_results[5] == true){final_result+="Lip Tightener  ";}
+			if(all_results[6] == true){final_result+="Mouth Stretch  ";}
+		}
+		else{
+			num++;
+			if(num%10 == 0){final_result="";}
+		}
+
+		cv::putText(bg,final_result, cv::Point(842, 120), CV_FONT_HERSHEY_SIMPLEX, 0.6, CV_RGB(0,0,0), 1, CV_AA);
+
+		Rect rect(100, 0, 760, 595);
+		Mat mask = matImageResize(rect);
+
+		imageROI = bg(cv::Rect(30,66,mask.cols,mask.rows));
+		mask.copyTo(imageROI);
+		cv::imshow("tracking_result", bg);
+		// cvResizeWindow("tracking_result", 640, 480);
+		// cv::namedWindow("tracking_result", 1);
+		// cv::imshow("tracking_result", captured_image); //显示整个人脸图片
 	}
 }
 
@@ -615,10 +722,11 @@ int main (int argc, char **argv)
 				face_analyser.AddNextFrame(captured_image, face_model, time_stamp, true, !det_parameters.quiet_mode);
 				face_analyser.GetLatestAlignedFace(sim_warped_img);
 
-				if(!det_parameters.quiet_mode)
-				{
-					cv::imshow("sim_warp", sim_warped_img);			
-				}
+				//对齐脸（小脸的显示）
+				// if(!det_parameters.quiet_mode)
+				// {
+				// 	cv::imshow("sim_warp", sim_warped_img);			
+				// }
 				if(hog_output_file.is_open())
 				{
 					face_analyser.GetLatestHOG(hog_descriptor, num_hog_rows, num_hog_cols);
@@ -655,6 +763,9 @@ int main (int argc, char **argv)
 
 			bool nodding = false;
 			bool shaking = false;
+			head_result[0] = estimateShaking(history_pose_estimate);
+			head_result[1] = estimateNodding(history_pose_estimate);
+
 			if (ls_nodding != estimateNodding(history_pose_estimate))
 			{
 				if (ls_nodding == false)
@@ -704,7 +815,10 @@ int main (int argc, char **argv)
 			}
 
 			// Visualising the tracker
+			// if(count_num%3 == 0){
 			visualise_tracking(captured_image, face_model, det_parameters, gazeDirection0, gazeDirection1, frame_count, fx, fy, cx, cy);
+			//}
+			
 
 			// Output the landmarks, pose, gaze, parameters and AUs
 			outputAllFeatures(&output_file, output_2D_landmarks, output_3D_landmarks, output_model_params, output_pose, output_AUs, output_gaze,
@@ -1025,7 +1139,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		//std::cout << endl<<endl;
 
 		count_num++;
-		if(count_num%1 == 0 && count_num > 10)
+		if(count_num%1 == 0 && count_num > 20)
 		{
 			int ls_num;
 			if(au_buffer1[3][0] == 0 && au_buffer1[3][1] == 0 && au_buffer1[3][2] == 0) ls_num = 0;
@@ -1062,19 +1176,21 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 						if(au_reg.first == "AU02") {ls_au02 = au_reg.second;}
 						if(au_reg.first == "AU05") {ls_au05 = au_reg.second;}
 
-						if(au_reg.first == "AU04") {au_buffer1[ls_num][1] = au_reg.second; if(au_reg.second >= 3){au_buffer[2]+=1;} else{au_buffer[2]=0;}}
-						if(au_reg.first == "AU12") {au_buffer1[ls_num][2] = au_reg.second; if(au_reg.second >= 3){au_buffer[3]+=1;} else{au_buffer[3]=0;}}
-						if(au_reg.first == "AU15") {au_buffer1[ls_num][3] = au_reg.second; if(au_reg.second >= 3){au_buffer[4]+=1;} else{au_buffer[4]=0;}}
-						if(au_reg.first == "AU17") {au_buffer1[ls_num][4] = au_reg.second; if(au_reg.second >= 3){au_buffer[5]+=1;} else{au_buffer[5]=0;}}
-						if(au_reg.first == "AU23") {au_buffer1[ls_num][5] = au_reg.second; if(au_reg.second >= 3){au_buffer[6]+=1;} else{au_buffer[6]=0;}}
-						if(au_reg.first == "AU26") {au_buffer1[ls_num][6] = au_reg.second; if(au_reg.second >= 3){au_buffer[7]+=1;} else{au_buffer[7]=0;}}
+						if(au_reg.first == "AU04") {au_buffer1[ls_num][1] = au_reg.second;au_result[1] = au_reg.second; if(au_reg.second >= 3){au_buffer[2]+=1;} else{au_buffer[2]=0;}}
+						if(au_reg.first == "AU12") {au_buffer1[ls_num][2] = au_reg.second;au_result[2] = au_reg.second; if(au_reg.second >= 3){au_buffer[3]+=1;} else{au_buffer[3]=0;}}
+						if(au_reg.first == "AU15") {au_buffer1[ls_num][3] = au_reg.second;au_result[3] = au_reg.second; if(au_reg.second >= 3){au_buffer[4]+=1;} else{au_buffer[4]=0;}}
+						if(au_reg.first == "AU17") {au_buffer1[ls_num][4] = au_reg.second;au_result[4] = au_reg.second; if(au_reg.second >= 3){au_buffer[5]+=1;} else{au_buffer[5]=0;}}
+						if(au_reg.first == "AU23") {au_buffer1[ls_num][5] = au_reg.second;au_result[5] = au_reg.second; if(au_reg.second >= 3){au_buffer[6]+=1;} else{au_buffer[6]=0;}}
+						if(au_reg.first == "AU26") {au_buffer1[ls_num][6] = au_reg.second;au_result[6] = au_reg.second; if(au_reg.second >= 3){au_buffer[7]+=1;} else{au_buffer[7]=0;}}
 						
 						break;
 					}
 				}
 			}
 
-			au_buffer1[ls_num][0] = (au_buffer1[ls_num][0] + ls_au02 + ls_au05) / 3.0;
+			au_buffer1[ls_num][0] = max(max(au_buffer1[ls_num][0],ls_au02),ls_au05);
+			au_result[0] = au_buffer1[ls_num][0];
+			// au_buffer1[ls_num][0] = (au_buffer1[ls_num][0] + ls_au02 + ls_au05) / 3.0;
 			if(au_buffer1[ls_num][0] >= 3){au_buffer[1]+=1;} else{au_buffer[1]=0;}
 
  			// print the result
@@ -1185,6 +1301,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		    servaddr.sin_port = htons(23333);
 		    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
+		    char send[100];
 		    char sendline[100];
 		    //int ls = 0;
 			for(int i = 1;i<=7;i++){
@@ -1208,10 +1325,33 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 			if(shaking == true) sendline[9] = '1';
 			if(shaking == false) sendline[9] = '0';
 
+			for(int i = 0;i<=6;i++){
+				if(au_result[i] >= 3) {
+					send[i+1] = '1';
+				}
+				else{
+					send[i+1] = '0';
+				}
+			}
+
+			if(head_result[1] == true) send[8] = '1';
+			if(head_result[1] == false) send[8] = '0';
+			if(head_result[0] == true) send[9] = '1';
+			if(head_result[0] == false) send[9] = '0';
+
 			bool ls_send = false;
 			for(int i = 1;i<=9;i++){
 				if(sendline[i] == '1') {
 					ls_send = true;
+				}
+			}
+
+			for(int i = 1;i<=9;i++){
+				if(sendline[i] == '1') {
+					all_results[i-1] = true;
+				}
+				else{
+					all_results[i-1] = false;
 				}
 			}
 			
@@ -1225,15 +1365,9 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		 //    	sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
 		 //    }
 
-			for(int i = 1;i<=9;i++){
-				cout<<sendline[i];
-			}
-			cout<<endl;
-			//cout<<"here"<<endl;
-	    	sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
-
-	    	int array[100];
-			recvfrom(sockfd, array, sizeof(array), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+		    sendto(sockfd, send, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	  //   	int array[100];
+			// recvfrom(sockfd, array, sizeof(array), 0, (struct sockaddr *)&servaddr, &sizeof(servaddr));
 
 		    close(sockfd);
 
