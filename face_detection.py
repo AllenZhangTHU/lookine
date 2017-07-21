@@ -33,6 +33,9 @@ autoOn = True
 onceOn = False
 PORT_NUMBER = 8006
 
+f = open('results.txt', 'w')
+f.write('start'+'\n')
+f.close()
 
 
 #This class will handles any incoming request from
@@ -161,8 +164,7 @@ pygame.mixer.init()
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
 
-s2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+# s2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 emotion = {}
 qid = 0
@@ -470,7 +472,7 @@ while True:
 
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(img, str(control) , (10, 500), font, 3, (0, 0, 255), 4,False)
-    cv2.imshow("lookine", img)
+    # cv2.imshow("lookine", img)
     try:
         if emotionOn:
             emotionDict = emotion["faces"][0]["attributes"]["emotion"]
@@ -482,7 +484,12 @@ while True:
             anger = emotionDict['anger']
             neutral = emotionDict['neutral']
 
-            s.sendto(str([neutral,happiness,sadness,surprise,fear,disgust,anger]), ('127.0.0.1', 23334))
+            # s2.sendto(str([neutral,happiness,sadness,surprise,fear,disgust,anger]), ('127.0.0.1', 23334))
+
+            f = open('results.txt', 'a+')
+            f.write(str([neutral,happiness,sadness,surprise,fear,disgust,anger])+'\n')
+            f.close()
+
             if autoOn:
                 if (happiness >75):
                     happinessT += 1
