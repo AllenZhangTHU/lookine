@@ -160,6 +160,10 @@ pygame.mixer.init()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('127.0.0.1', 23333))
+
+s2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+
 emotion = {}
 qid = 0
 rid = 0
@@ -476,6 +480,9 @@ while True:
             fear = emotionDict['fear']
             disgust = emotionDict['disgust']
             anger = emotionDict['anger']
+            neutral = emotionDict['neutral']
+
+            s.sendto(str([neutral,happiness,sadness,surprise,fear,disgust,anger]), ('127.0.0.1', 23334))
             if autoOn:
                 if (happiness >75):
                     happinessT += 1
