@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 import socket
 import pygame
+import serial
 
 happinessT = 0
 sadnessT = 0
@@ -135,15 +136,12 @@ count = 0
 
 MARGIN = 50
 MOVEUNIT = 5
-device = '/dev/ttyUSB0'
+device = '/dev/tty.wchusbserial1460'
 MAX_TIME_SLICE = 10
 time_slice = 0
 
-try:
-    arduino = serial.Serial(device, 9600)
-except:
-    # print 'Failed to connect on ' + device
-    pass
+ser = serial.Serial('/dev/tty.wchusbserial1460', 9600)
+
 while True:
     count+=1
     ok, img = cap.read()
@@ -173,11 +171,11 @@ while True:
             control /= abs(control)
             control *= MOVEUNIT
             try:
-                arduino.write(str(control))
+                ser.write(str(control))
                 time.sleep(1)
-                # print arduino.readline()
+                print ser.readline()
             except:
-                # print 'Failed to send'
+                print 'Failed to send'
                 pass
     else:
         time_slice -= 1

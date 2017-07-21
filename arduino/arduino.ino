@@ -3,7 +3,7 @@
 Servo myservo;  // create servo object to control a servo
 // a maximum of eight servo objects can be created
 
-#define servo_pin SDA
+#define servo_pin 9
 
 String inString = "";
 
