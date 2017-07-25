@@ -25,6 +25,9 @@ fearT = 0
 disgustT = 0
 angerT = 0
 auT = [0,0,0,0,0,0,0,0,0,0]
+ageN = 0
+genderN = ''
+ethnicityN = ''
 
 emotionOn = True
 auOn = True
@@ -399,7 +402,7 @@ def getEmotion(img,qid):
         'Content-Type': 'multipart/form-data',
         'api_key':"sVGcopkVOZiulHag7dSp_QMLjKjtACxh",
         "api_secret":"6NBKvh_M09KH1d_93DBjw3gAOvp_qZl1",
-        "return_attributes":"emotion",
+        "return_attributes":"emotion,gender,age,ethnicity",
         "image_base64":body
     }
     r = requests.post('https://api-cn.faceplusplus.com/facepp/v3/detect', data=headers)
@@ -411,6 +414,22 @@ def getEmotion(img,qid):
     if (qid >= rid)and(not eval(r.content).has_key("error_message")):
         emotion = eval(r.content)
         rid = qid
+        # print(emotion)
+        try:    
+            gender = emotion["faces"][0]["attributes"]["gender"]['value']
+            global genderN
+            genderN = gender
+            print(gender)
+            age = emotion["faces"][0]["attributes"]["age"]['value']
+            global ageN 
+            ageN = age
+            print("ageN: "+str(ageN))
+            ethnicity = emotion["faces"][0]["attributes"]["ethnicity"]['value']
+            global ethnicityN
+            ethnicityN = ethnicity
+            print(ethnicity)
+        except Exception as e:
+            pass
     # print(emotion)
     # print(time.time()-stime)
 cv2.namedWindow("lookine")
@@ -471,8 +490,13 @@ while True:
 
 
     font = cv2.FONT_HERSHEY_SIMPLEX
+    # global ageN,ethnicityN,genderN
     cv2.putText(img, str(control) , (10, 500), font, 3, (0, 0, 255), 4,False)
-    # cv2.imshow("lookine", img)
+    cv2.putText(img, "Ethnicity: "+ethnicityN , (1000, 100), font, 1, (0, 0, 0), 2,False)
+    cv2.putText(img, "Gender: "+genderN , (1000, 150), font, 1, (0, 0, 0), 2,False)
+    cv2.putText(img, "Age: "+str(ageN) , (1000, 200), font, 1, (0, 0, 0), 2,False)
+
+    cv2.imshow("lookine", img)
     try:
         if emotionOn:
             emotionDict = emotion["faces"][0]["attributes"]["emotion"]
