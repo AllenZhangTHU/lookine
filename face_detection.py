@@ -419,15 +419,15 @@ def getEmotion(img,qid):
             gender = emotion["faces"][0]["attributes"]["gender"]['value']
             global genderN
             genderN = gender
-            print(gender)
+            # print(gender)
             age = emotion["faces"][0]["attributes"]["age"]['value']
             global ageN 
             ageN = age
-            print("ageN: "+str(ageN))
+            # print("ageN: "+str(ageN))
             ethnicity = emotion["faces"][0]["attributes"]["ethnicity"]['value']
             global ethnicityN
             ethnicityN = ethnicity
-            print(ethnicity)
+            # print(ethnicity)
         except Exception as e:
             pass
     # print(emotion)
@@ -492,11 +492,11 @@ while True:
     font = cv2.FONT_HERSHEY_SIMPLEX
     # global ageN,ethnicityN,genderN
     cv2.putText(img, str(control) , (10, 500), font, 3, (0, 0, 255), 4,False)
-    cv2.putText(img, "Ethnicity: "+ethnicityN , (1000, 100), font, 1, (0, 0, 0), 2,False)
-    cv2.putText(img, "Gender: "+genderN , (1000, 150), font, 1, (0, 0, 0), 2,False)
-    cv2.putText(img, "Age: "+str(ageN) , (1000, 200), font, 1, (0, 0, 0), 2,False)
+    cv2.putText(img, "Ethnicity: "+ethnicityN , (1000, 100), font, 1, (0, 0, 255), 2,False)
+    cv2.putText(img, "Gender: "+genderN , (1000, 150), font, 1, (0, 0, 255), 2,False)
+    cv2.putText(img, "Age: "+str(ageN) , (1000, 200), font, 1, (0, 0, 255), 2,False)
 
-    cv2.imshow("lookine", img)
+    # cv2.imshow("lookine", img)
     try:
         if emotionOn:
             emotionDict = emotion["faces"][0]["attributes"]["emotion"]
@@ -511,7 +511,7 @@ while True:
             # s2.sendto(str([neutral,happiness,sadness,surprise,fear,disgust,anger]), ('127.0.0.1', 23334))
 
             f = open('results.txt', 'a+')
-            f.write(str([neutral,happiness,sadness,surprise,fear,disgust,anger])+'\n')
+            f.write(str([neutral,happiness,sadness,surprise,fear,disgust,anger,ageN,control])+' '+genderN+' '+'\n')
             f.close()
 
             if autoOn:
