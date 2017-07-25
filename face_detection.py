@@ -39,7 +39,7 @@ PORT_NUMBER = 8006
 f = open('results.txt', 'w')
 f.write('start'+'\n')
 f.close()
-
+face = {}
 
 #This class will handles any incoming request from
 #the browser 
@@ -410,27 +410,42 @@ def getEmotion(img,qid):
     
     # print(r.headers)
     global emotion
+    global face
     global rid
     if (qid >= rid)and(not eval(r.content).has_key("error_message")):
         emotion = eval(r.content)
         rid = qid
+
+    face = {}
+    for x in emotion["faces"]:
+        fwidth = 0
+        try:
+            fwidth = face["face_rectangle"]["width"]
+        except:
+            pass
+        if x["face_rectangle"]["width"]>fwidth:
+            face = x
+            # print x["face_rectangle"]["width"]
+    # print(face)
+
         # print(emotion)
         try:    
-            gender = emotion["faces"][0]["attributes"]["gender"]['value']
+            gender = face["attributes"]["gender"]['value']
             global genderN
             genderN = gender
             # print(gender)
-            age = emotion["faces"][0]["attributes"]["age"]['value']
+            age = face["attributes"]["age"]['value']
             global ageN 
             ageN = age
             # print("ageN: "+str(ageN))
-            ethnicity = emotion["faces"][0]["attributes"]["ethnicity"]['value']
+            ethnicity = face["attributes"]["ethnicity"]['value']
             global ethnicityN
             ethnicityN = ethnicity
             # print(ethnicity)
         except Exception as e:
             pass
     # print(emotion)
+
     # print(time.time()-stime)
 cv2.namedWindow("lookine")
 cap = cv2.VideoCapture(0) 
@@ -499,7 +514,7 @@ while True:
     # cv2.imshow("lookine", img)
     try:
         if emotionOn:
-            emotionDict = emotion["faces"][0]["attributes"]["emotion"]
+            emotionDict = face["attributes"]["emotion"]
             happiness = emotionDict['happiness']
             sadness = emotionDict['sadness']
             surprise = emotionDict['surprise']
