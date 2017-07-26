@@ -109,6 +109,11 @@ static bool all_results[15] = {0};
 static string final_result;
 static int num = 0;
 static int expN[6] = {0};
+static int ageN = 0;
+static char genderN[] = "";
+static char ethnicityN[] = "";
+static int control = 0;
+
 
 using namespace boost::filesystem;
 
@@ -228,6 +233,21 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 	string fpsSt("FPS:");
 	fpsSt += fpsC;
 	cv::putText(captured_image, fpsSt, cv::Point(172, 40), CV_FONT_HERSHEY_SIMPLEX, 1, CV_RGB(246, 162, 25), 2, CV_AA);
+	string genderT("Gender: ");
+	genderT += genderN;
+	string ageT("Age: ");
+	char ageC[10];
+	std::sprintf(ageC, "%d", ageN);
+	ageT += ageC;
+
+	string controlT("Control Signal: ");
+	char controlC[10];
+	std::sprintf(controlC, "%d", control);
+	controlT += controlC;
+
+	cv::putText(captured_image, genderT.substr(0,genderT.length()-1), cv::Point(880, 40), CV_FONT_HERSHEY_SIMPLEX, 1, CV_RGB(246, 162, 25), 2, CV_AA);
+	cv::putText(captured_image, ageT, cv::Point(880, 80), CV_FONT_HERSHEY_SIMPLEX, 1, CV_RGB(246, 162, 25), 2, CV_AA);
+	cv::putText(captured_image, controlT, cv::Point(172, 666), CV_FONT_HERSHEY_SIMPLEX, 1, CV_RGB(246, 162, 25), 2, CV_AA);
 
 	if (!det_parameters.quiet_mode)
 	{
@@ -1447,7 +1467,14 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		    float anger = 0;
 		    float fear = 0;
 
-		    sscanf(a,"[%f, %f, %f, %f, %f, %f, %f]",&neutral,&happiness,&sadness,&surprise,&fear,&disgust,&anger);
+		    int age = 0;
+		    int con = 0;
+
+		    sscanf(a,"[%f, %f, %f, %f, %f, %f, %f, %d, %d] %s ",&neutral,&happiness,&sadness,&surprise,&fear,&disgust,&anger, &age, &con, genderN);
+		    // cout<<genderN<<endl;
+		    // cout<<age<<" "<<con<<endl;
+		    ageN = age;
+		    control = con;
 		    // cout<<neutral<<" "<<happiness<<" "<<sadness<<" "<<surprise<<" "<<fear<<" "<<disgust<<" "<<anger<<endl;
 		    expressions_result[0] = neutral;
 		    expressions_result[1] = happiness;

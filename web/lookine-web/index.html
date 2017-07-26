@@ -52,14 +52,14 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-xs-4">
-            	<div role="button" aria-label="情绪已选择" id="1-1">
+            	<div role="button" aria-label="已选定情绪" id="1-1">
 	              <center><img src="pic/1-1-2.png" class="img-rounded" id="1-1-img"></center>
 	              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪</h0></button></center> -->
 	              <center><h1>情绪</h1></center>
             	</div>
             </div>
             <div class="col-xs-4" >
-            	<div role="button" aria-label="微表情未选择" id="1-2">
+            	<div role="button" aria-label="微表情" id="1-2">
 	              <center><img src="pic/1-2-1.png" class="img-rounded" id="1-2-img"></center>
 	              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪</h0></button></center> -->
 	              <center><h1>微表情</h1></center>
@@ -68,7 +68,7 @@
             </div>
             <div class="col-xs-4" > 
             <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪与微表情</h0></button></center> -->
-            	<div role="button" aria-label="情绪与微表情未选择" id="1-3">
+            	<div role="button" aria-label="情绪与微表情" id="1-3">
 	              <center><img src="pic/1-3-1.png" class="img-rounded" id="1-3-img"></center>
 	              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>情绪</h0></button></center> -->
 	              <center><h1>情绪与微表情</h1></center>
@@ -90,19 +90,19 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-xs-4"> 
-            	<div role="button" aria-label="正常速度已选择" id="2-1">
+            	<div role="button" aria-label="已选定正常速度" id="2-1">
 	              <center><img src="pic/2-1-2.png" class="img-rounded" id="2-1-img"></center>
 	              <center><h1>正常速度</h1></center>
             	</div>
             </div>
             <div class="col-xs-4" > 
-            	<div role="button" aria-label="1.5倍速度未选择" id="2-2">
+            	<div role="button" aria-label="1.5倍速度" id="2-2">
 	              <center><img src="pic/2-2-1.png" class="img-rounded" id="2-2-img"></center>
 	              <center><h1>1.5倍速度</h1></center>
             	</div>
             </div>
             <div class="col-xs-4"> 
-            	<div role="button" aria-label="2倍速度未选择" id="2-3">
+            	<div role="button" aria-label="2倍速度" id="2-3">
 	              <center><img src="pic/2-3-1.png" class="img-rounded" id="2-3-img"></center>
 	              <center><h1>2倍速度</h1></center>
             	</div>
@@ -125,14 +125,14 @@
             <div class="col-xs-6">
             <!-- <img src="{% static 'pic/1.png' %}" class="img-rounded">-->
             <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>自动识别</h0></button></center> -->
-             <div role="button" aria-label="自动识别已选择" id="3-1">
+             <div role="button" aria-label="已选定自动识别" id="3-1">
 	             <center><img src="pic/3-1-2.png" class="img-rounded" id="3-1-img"></center>
 	             <center><h1>自动识别</h1></center>
              </div>
             </div>
             <div class="col-xs-6"> 
              <!-- <center><button type="button" class="btn btn-default btn-lg"><h0>单次识别</h0></button></center> -->
-             <div role="button" aria-label="单词识别未选择" id="3-2">
+             <div role="button" aria-label="单词识别" id="3-2">
 		         <center><img src="pic/3-2-1.png" class="img-rounded" id="3-2-img"></center>
 		         <center><h1>单次识别</h1></center>
              </div>
@@ -181,11 +181,11 @@
       $.post("/settype",JSON.stringify({detail:"emotion"}),function (data) {
         if(data['result'] == "ok"){
           $("#1-1-img").attr('src','pic/1-1-2.png');
-          $("#1-1").attr('aria-label','情绪已选择');
+          $("#1-1").attr('aria-label','已选定情绪');
           $("#1-2-img").attr('src','pic/1-2-1.png');
-          $("#1-2").attr('aria-label','微表情未选择');
+          $("#1-2").attr('aria-label','微表情');
           $("#1-3-img").attr('src','pic/1-3-1.png');
-          $("#1-3").attr('aria-label','情绪与微表情未选择');
+          $("#1-3").attr('aria-label','情绪与微表情');
         }
       })
 		}
@@ -197,11 +197,11 @@
 			$.post("/settype",JSON.stringify({detail:"au"}),function (data) {
         if(data['result'] == "ok"){
           $("#1-2-img").attr('src','pic/1-2-2.png');
-          $("#1-2").attr('aria-label','微表情已选择');
+          $("#1-2").attr('aria-label','已选定微表情');
           $("#1-1-img").attr('src','pic/1-1-1.png');
-          $("#1-1").attr('aria-label','情绪未选择');
+          $("#1-1").attr('aria-label','情绪');
           $("#1-3-img").attr('src','pic/1-3-1.png');
-          $("#1-3").attr('aria-label','情绪与微表情未选择');
+          $("#1-3").attr('aria-label','情绪与微表情');
         }
       })	
 		}
@@ -211,11 +211,11 @@
   			$.post("/settype",JSON.stringify({detail:"both"}),function (data) {
         if(data['result'] == "ok"){
           $("#1-3-img").attr('src','pic/1-3-2.png');
-          $("#1-3").attr('aria-label','情绪与微表情已选择');
+          $("#1-3").attr('aria-label','已选定情绪与微表情');
           $("#1-1-img").attr('src','pic/1-1-1.png');
-          $("#1-1").attr('aria-label','情绪未选择');
+          $("#1-1").attr('aria-label','情绪');
           $("#1-2-img").attr('src','pic/1-2-1.png');
-          $("#1-2").attr('aria-label','微表情未选择');
+          $("#1-2").attr('aria-label','微表情');
         }
       })
   			
@@ -228,11 +228,11 @@
       $.post("/setspeed",JSON.stringify({detail:"normal"}),function (data) {
         if(data['result'] == "ok"){
           $("#2-1-img").attr('src','pic/2-1-2.png');
-          $("#2-1").attr('aria-label','正常速度已选择');
+          $("#2-1").attr('aria-label','已选定正常速度');
           $("#2-2-img").attr('src','pic/2-2-1.png');
-          $("#2-2").attr('aria-label','1.5倍速度未选择');
+          $("#2-2").attr('aria-label','1.5倍速度');
           $("#2-3-img").attr('src','pic/2-3-1.png');
-          $("#2-3").attr('aria-label','2倍速度未选择');
+          $("#2-3").attr('aria-label','2倍速度');
         }
       })
 			
@@ -244,11 +244,11 @@
 			$.post("/setspeed",JSON.stringify({detail:"1.5times"}),function (data) {
         if(data['result'] == "ok"){
           $("#2-2-img").attr('src','pic/2-2-2.png');
-          $("#2-2").attr('aria-label','1.5倍速度已选择');
+          $("#2-2").attr('aria-label','已选定1.5倍速度');
           $("#2-1-img").attr('src','pic/2-1-1.png');
-          $("#2-1").attr('aria-label','正常速度未选择');
+          $("#2-1").attr('aria-label','正常速度');
           $("#2-3-img").attr('src','pic/2-3-1.png');
-          $("#2-3").attr('aria-label','2倍速度未选择');
+          $("#2-3").attr('aria-label','2倍速度');
         }
       })
 			
@@ -260,11 +260,11 @@
 			$.post("/setspeed",JSON.stringify({detail:"2times"}),function (data) {
         if(data['result'] == "ok"){
           $("#2-3-img").attr('src','pic/1-3-2.png');
-          $("#2-3").attr('aria-label','2倍速度已选择');
+          $("#2-3").attr('aria-label','已选定2倍速度');
           $("#2-1-img").attr('src','pic/2-1-1.png');
-          $("#2-1").attr('aria-label','正常速度未选择');
+          $("#2-1").attr('aria-label','正常速度');
           $("#2-2-img").attr('src','pic/2-2-1.png');
-          $("#2-2").attr('aria-label','1.5倍速度未选择');
+          $("#2-2").attr('aria-label','1.5倍速度');
         }
       })
 		}
@@ -276,9 +276,9 @@
       $.post("/setmode",JSON.stringify({detail:"auto"}),function (data) {
         if(data['result'] == "ok"){
           $("#3-1-img").attr('src','pic/3-1-2.png');
-          $("#3-1").attr('aria-label','自动识别已选择');
+          $("#3-1").attr('aria-label','已选定自动识别');
           $("#3-2-img").attr('src','pic/3-2-1.png');
-          $("#3-2").attr('aria-label','单次识别未选择');
+          $("#3-2").attr('aria-label','单次识别');
         }
       })
     }
@@ -290,9 +290,9 @@
       $.post("/setmode",JSON.stringify({detail:"once"}),function (data) {
         if(data['result'] == "ok"){
           $("#3-2-img").attr('src','pic/3-2-2.png');
-          $("#3-2").attr('aria-label','单次识别已选择');
+          $("#3-2").attr('aria-label','已选定单次识别');
           $("#3-1-img").attr('src','pic/3-1-1.png');
-          $("#3-1").attr('aria-label','自动识别未选择');
+          $("#3-1").attr('aria-label','自动识别');
           $("#4-img").attr('src','pic/4-1.png');
         }
       })
