@@ -683,12 +683,12 @@ while True:
                     pygame.mixer.music.play()
 
 
-            data = emotionDict.values()
-            labels = emotionDict.keys()
-            plt.cla()
-            plt.ylim((0,100))
-            plt.bar(range(len(data)), data, tick_label=labels)
-            plt.draw()
+            # data = emotionDict.values()
+            # labels = emotionDict.keys()
+            # plt.cla()
+            # plt.ylim((0,100))
+            # plt.bar(range(len(data)), data, tick_label=labels)
+            # plt.draw()
     except Exception as e:
         # print("[Errno {0}] {1}".format(e.errno, e.strerror))
         pass
